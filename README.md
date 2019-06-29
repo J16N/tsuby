@@ -3,7 +3,7 @@
 Hello there. Say hey to Tsuby. I am so eager to play with you. Before you request me to join your server, I also do have a little request for you. I need an "Administrative" priviledge on your server because that helps me to run correctly. So what are you waiting for? Come, let's join the adventure!!!
 
 [![](https://cdn.discordapp.com/attachments/594172292594925568/594196409385746514/invite_dschackweek_longversion_512.png)](https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot)
-[![](https://cdn.discordapp.com/attachments/594172292594925568/594412110407139329/invite_dschackweek_hopinforsupp_330.png)](https://discord.gg/qPnmfh4)
+[![](https://cdn.discordapp.com/attachments/594172292594925568/594458570632855563/invite_dschackweek_jumpinforsupp_330.png)](https://discord.gg/qPnmfh4)
 
 
 
