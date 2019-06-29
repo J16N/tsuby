@@ -1,10 +1,8 @@
 ![](https://cdn.discordapp.com/attachments/589834753897922617/594154886770196481/introduction_dchckweek.png) 
 
-**Tsuby** is a 
+Hello there. Say hey to Tsuby. I am so eager to play with you. Before you request me to join your server, I also do have a little request for you. I need an "Administrative" priviledge on your server because that helps me to run correctly. So what are you waiting for? Come, let's join the adventure!!!
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. 
-
-[![](https://cdn.discordapp.com/attachments/594172292594925568/594196409385746514/invite_dschackweek_longversion_512.png)](botlink)
+[![](https://cdn.discordapp.com/attachments/594172292594925568/594196409385746514/invite_dschackweek_longversion_512.png)](https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot)
 
 
 # Table of Contents
@@ -17,14 +15,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
     - [Jokes](#Jokes)
     - [Translator](#Translator)
 - [Contributor](#Contributor)
-
-
-# Setup
-
- put installation process here if there is..(step by step)
  
 
-# Prefix&Commands
+# Prefix & Commands
 
 **Prefix**
 
@@ -41,10 +34,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 |**nitromojis**|`t-nitromojis` _then_ `t-ne <ntrimojiname>` _to use_ | List of all the nitromojis and let you use nitromojis from the list |
 |**ping**|`t-ping`|Pings the bot|
 |**react**|`t-react <emojiname>`_or_`<nitromojiname>` | tsuby will react to the last message of any user|
-
-**Main Commands**
-
-these are the commands that make our bot entertaining and interactive
 
 #### Game
 |Option|Command|Description|
@@ -120,3 +109,8 @@ these are the commands that make our bot entertaining and interactive
 ||`t-tr ch off`| Disables your channel-wide auto-translation|
 
 # Contributor
+*These are the discord people without whom I could not have born. :p*
+- Tsubasa#7917
+- Linus#0002
+
+I would also like to thank Zaxs Souven#4045 for giving me such a wonderful name.
