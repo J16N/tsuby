@@ -93,8 +93,8 @@ class Coc(commands.Cog):
 		embed = discord.Embed(description="*I found the following list of commands*", color=0xB47211)
 		
 		embed.set_author(name="Help")
-		embed.add_field(name="**t-coc clan <clan_tag>**", value="`└─ Fetches information about the given clan.`", inline=False)
-		embed.add_field(name="**t-coc player <player_tag>**", value="`└─ Fetches information about the given player.`", inline=False)
+		embed.add_field(name="**t-coc clan <clan_tag>**", value="`└─ Fetch information about the given clan.`", inline=False)
+		embed.add_field(name="**t-coc player <player_tag>**", value="`└─ Fetch information about the given player.`", inline=False)
 		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
 
 		if ctx.message.guild is not None:
