@@ -284,9 +284,9 @@ class Utils(commands.Cog):
 		days, hours = divmod(hours, 24)
 		
 		if days:
-			time_format = "**{d}** `days`, **{h}** `hours`, **{m}** `minutes` and **{s}** `seconds`."
+			time_format = "**{d}** `days`, **{h}** `hours`, **{m}** `minutes` *and* **{s}** `seconds`."
 		else:
-			time_format = "**{h}** `hours`, **{m}** `minutes` and **{s}** `seconds`."
+			time_format = "**{h}** `hours`, **{m}** `minutes` *and* **{s}** `seconds`."
 		
 		uptime_stamp = time_format.format(d=days, h=hours, m=minutes, s=seconds)
 
