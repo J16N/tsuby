@@ -60,7 +60,7 @@ Hello there. Say hey to Tsuby. I am so eager to play with you. Before you reques
 |------|-------|-----------|
 |**sections**|`t-9gag sections`| Get the list of 9gag categories.|
 ||`t-9gag <section name>`| Get random post from 9gag.com.|
-||`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> _<popular>_ includes _Trending and Fresh_|
+||`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
 
 #### COC
 |Option|Command|Description|
@@ -97,7 +97,7 @@ Hello there. Say hey to Tsuby. I am so eager to play with you. Before you reques
 |------|-------|--------|-----------|
 |**codes**|`t-tr codes`| No|Get the list of language codes.|
 |**fr**|`t-tr fr <destination><source>[<user><user>...<user>]`|Yes| Enables auto translation of the messages to the 'dest.' language from the 'src' language of all the mentioned 'user'|
-|**ignore** | `t-tr ignore [<word> <word> ... <word>]`|Yes|Ignores auto-translating the message when started with the given words. Usually 'word' contain other bot's prefixes. <br> **Warning:** Once the words is added, it cannot be removed.|
+|**ignore** | `t-tr ignore [<word> <word> ... <word>]`|Yes|Ignores auto-translating the message when started with the given words. Usually 'word' contain other bot's prefixes. <br> **Warning:** *Once the words is added, it cannot be removed.*|
 |**remove**|`t-tr remove [<user> <user> ... <user>]`|Yes|Disable auto translation of all the mentioned 'user'.|
 |**to**| `t-tr to <dest.> <src> <message>`|No| Translate the message to the 'dest.' language from the 'src' language.|
 
