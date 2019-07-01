@@ -41,7 +41,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |------|-------|-----------|
 |**game help**|`t-game help`| All the available games and their related commands.|
 
-***game related commands:***
+***Game related commands:***
 
 |Option|Commands|Description|
 |------|-------|-----------|
@@ -59,7 +59,8 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |------|-------|-----------|
 |**sections**|`t-9gag sections`| Get the list of 9gag categories.|
 ||`t-9gag <section name>`| Get random post from 9gag.com.|
-||`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
+|**popular**|`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
+|**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
 #### COC
 |Option|Command|Description|
@@ -111,7 +112,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 
 # Contributor
 *These are the discord people without whom I could not have born. :p*
-- Tsubasa#7917
-- Linus#0002
+- `Tsubasa#7917`
+- `Linus#0002`
 
-I would also like to thank Zaxs Souven#4045 for giving me such a wonderful name.
+I would also like to thank `Zaxs Souven#4045` for giving me such a wonderful name.
