@@ -9,7 +9,6 @@ Hello there. Say hey to Tsuby. I am so eager to play with you. Before you reques
 
 # Table of Contents
 
-- [Setup](#Setup)
 - [Prefix & Commands](#PrefixCommands)
     - [Game](#Game)
     - [9gag](#9gag)
