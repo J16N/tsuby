@@ -41,7 +41,6 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**ping**|`t-ping`|Ping me!|
 |**react**|`t-react <emoji>`_or_`<nitromojiname>` | Tsuby will react to the last message of any user.|
 
-<br>
 #### Game <br>
 *I do have some games to kill your time. Don't forget to check it out. ;)*
 
@@ -56,7 +55,6 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**tictactoe**|`t-game tictactoe <@user>`| Play tictactoe with your friend.|
 |**guess**|`t-game guess` | Play a person-guessing game with me.|
 
-<br>
 #### 9gag <br>
 *Aaaha! With the new invention of **`infinite-post`** by my owner, these commands are one of the must-try ones.*<br>
 *Nope, no, if you think that this would spam, then you have probably misunderstood the `infinite-post`.*
@@ -74,7 +72,6 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**popular**|`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
 |**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
-<br>
 #### COC <br>
 *My owner and supporter were really addictive to this game. :p <br>
 Well who doesn't want to get stats of 'player' and 'clan' right from the discord?* ^^
@@ -90,7 +87,6 @@ Well who doesn't want to get stats of 'player' and 'clan' right from the discord
 |**clan**|`t-coc clan <clan_tag>`| Fetch information about the given clan.|
 |**player**|`t-coc player <player tag>`| Fetch information about the given player.|
 
-<br>
 #### Jokes <br>
 *Wife: “Windows frozen.” <br>
 Husband: “Pour some warm water over them.” <br>
@@ -109,7 +105,6 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |**category**|`t-jokes category`| Get the list of jokes categories
 ||`t-jokes <category>(optional)`| Get some random jokes.
 
-<br>
 #### Translator <br>
 *Do you ever need any help with some random visitors in your server who don't speak your language but you want him to take part in the conversation?*
 *Invite me and I can be your translator.* ;)
