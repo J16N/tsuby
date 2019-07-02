@@ -23,12 +23,14 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 # Prefix & Commands
 
 **Prefix**
+*My prefix is case-insensitive.*
 
 |Option|Default|Example|
 |------|-------|-----------|
 | Prefix|`t-`|`t-help`| 
  
 **Utility Commands**
+*These are some of my utility commands.*
 
 |Option|Commands|Description|
 |------|-------|-----------|
@@ -39,6 +41,8 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**react**|`t-react <emoji>`_or_`<nitromojiname>` | Tsuby will react to the last message of any user.|
 
 #### Game
+*I do have some games to kill your time. Don't forget to check it out. ;)*
+
 |Option|Command|Description|
 |------|-------|-----------|
 |**game help**|`t-game help`| All the available games and their related commands.|
@@ -51,6 +55,9 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**guess**|`t-game guess` | Play a person-guessing game with me.|
 
 #### 9gag
+*Aaaha! With the new invention of **`infinite-post`** by my owner, these commands are one of the must-try ones.*<br>
+*Nope, no, if you think that this would spam, then you're probably misunderstood the `infinite-post`.*
+
 |Option|Command|Description|
 |------|-------|-----------|
 |**9gag help**|`t-9gag help`| All the available memes related commands.|
@@ -65,6 +72,8 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
 #### COC
+*My owner was really addictive to this game. Well who doesn't want to get stats of 'player' and 'clan' right from the discord?* ^^
+
 |Option|Command|Description|
 |------|-------|-----------|
 |**coc help**|`t-coc help`|  All the Clash of Clans related commands.|
@@ -77,6 +86,12 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**player**|`t-coc player <player tag>`| Fetch information about the given player.|
 
 #### Jokes
+*Wife: “Windows frozen.”
+Husband: “Pour some warm water over them.”
+Wife: “Computer completely screwed up now.”*
+
+*Hahaha...sometimes, I can be really funny as well.* ;)
+
 |Option|Command|Description|
 |------|-------|-----------|
 |**jokes help**|`t-jokes help`|All the available jokes related commands.|
@@ -89,6 +104,9 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 ||`t-jokes <category>(optional)`| Get some random jokes.
 
 #### Translator
+*Do you ever need any help with some random visitors in your server who don't speak your language but you want him to take part in the conversation?*
+*Invite me and I can be your translator.* ;)
+
 |Option|Command|Description|
 |------|-------|-----------|
 |**tr help**|`t-tr help`|All the translation related commands.|
