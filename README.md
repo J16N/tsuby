@@ -22,14 +22,14 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 
 # Prefix & Commands
 
-**Prefix** <br>
+#### Prefix <br>
 *My prefix is case-insensitive.*
 
 |Option|Default|Example|
 |------|-------|-----------|
 | Prefix|`t-`|`t-help`| 
  
-**Utility Commands** <br>
+#### Utility Commands <br>
 *These are some of my utility commands.*
 
 |Option|Commands|Description|
