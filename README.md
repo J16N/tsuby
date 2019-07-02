@@ -68,7 +68,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |Option|Commands|Description|
 |------|-------|-----------|
 |**sections**|`t-9gag sections`| Get the list of 9gag categories.|
-||`t-9gag <section name>`| Get random post from 9gag.com.|
+||`t-9gag <section name>(optional)`| Get random post from 9gag.com.|
 |**popular**|`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
 |**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
