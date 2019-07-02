@@ -37,7 +37,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |------|-------|-----------|
 |**feedback**|`t-feedback <msg>`|Send feedback to my owner.|
 |**info**|`t-help`| Lists some general info about me.|
-|**nitromojis**|`t-nitromojis` _then_ `t-ne <nitromojiname>` _to use_ | List of all the nitromojis and let you use nitromojis from the list.|
+|**nitromojis**|`t-nitromojis` _then_ `t-ne <nitromojiname>` _to use_ | Lists all the nitromojis and let you use nitromojis from the list.|
 |**ping**|`t-ping`|Ping me!|
 |**react**|`t-react <emoji>`_or_`<nitromojiname>` | Tsuby will react to the last message of any user.|
 
