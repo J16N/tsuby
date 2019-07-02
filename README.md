@@ -87,9 +87,9 @@ Well who doesn't want to get stats of 'player' and 'clan' right from the discord
 |**player**|`t-coc player <player tag>`| Fetch information about the given player.|
 
 #### Jokes <br>
-*Wife: “Windows frozen.”
-Husband: “Pour some warm water over them.”
-Wife: “Computer completely screwed up now.”*
+*Wife: “Windows frozen.” <br>
+Husband: “Pour some warm water over them.” <br>
+Wife: “Computer completely screwed up now.”* <br><br>
 
 *Hahaha...sometimes, I can be really funny as well.* ;)
 
