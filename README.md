@@ -1,7 +1,7 @@
 ![](https://cdn.discordapp.com/attachments/589834753897922617/594154886770196481/introduction_dchckweek.png) 
 
-Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I need an "Administrative" priviledge on your server because that helps me to run correctly. 
-*And if you like me, don't forget to star this repository.*
+Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I need an "Administrative" priviledge on your server because that helps me to run correctly.<br>
+*And if you like me, don't forget to star this repository.*<br>
 ***So what are you waiting for? Come, let's join the adventure!***
 
 [![](https://cdn.discordapp.com/attachments/594172292594925568/594196409385746514/invite_dschackweek_longversion_512.png)](https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot)
