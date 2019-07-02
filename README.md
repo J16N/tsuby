@@ -17,7 +17,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
     - [COC](#COC)
     - [Jokes](#Jokes)
     - [Translator](#Translator)
-- [Contributor](#Contributor)
+- [Contributors](#Contributors)
 - [Acknowledgement](#Acknowledgement)
  
 
@@ -132,7 +132,7 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |**ch on/off**| `t-tr ch on <dest.><src>`|  Enable channel-wide auto-translation of your message to the 'dest.' language from the 'src' language.|
 ||`t-tr ch off`| Disable your channel-wide auto-translation|
 
-# Contributor
+# Contributors
 *These are the discord people without whom I could not have born.* :p
 - `Tsubasa#7917 (my owner)`
 - `Linus#0002 (my supporter)`
