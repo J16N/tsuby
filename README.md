@@ -56,7 +56,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 
 #### 9gag <br>
 *Aaaha! With the new invention of **`infinite-post`** by my owner, these commands are one of the must-try ones.*<br>
-*Nope, no, if you think that this would spam, then you're probably misunderstood the `infinite-post`.*
+*Nope, no, if you think that this would spam, then you have probably misunderstood the `infinite-post`.*
 
 |Option|Command|Description|
 |------|-------|-----------|
