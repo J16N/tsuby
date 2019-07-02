@@ -72,7 +72,8 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
 #### COC <br>
-*My owner was really addictive to this game. Well who doesn't want to get stats of 'player' and 'clan' right from the discord?* ^^
+*My owner was really addictive to this game.<br>
+Well who doesn't want to get stats of 'player' and 'clan' right from the discord?* ^^
 
 |Option|Command|Description|
 |------|-------|-----------|
