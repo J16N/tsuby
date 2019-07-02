@@ -1,6 +1,6 @@
 ![](https://cdn.discordapp.com/attachments/589834753897922617/594154886770196481/introduction_dchckweek.png) 
 
-Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I need an "Administrative" priviledge on your server because that helps me to run correctly.<br>
+Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I require an **`Administrative`** priviledge on your server because that helps me to run correctly.<br>
 *And if you like me, don't forget to star this repository.*<br>
 ***So what are you waiting for? Come, let's join the adventure!***
 
