@@ -12,11 +12,11 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 # Table of Contents
 
 - [Prefix & Commands](#Prefix--Commands)
-    - [Game](#Game)
-    - [9gag](#9gag)
-    - [COC](#COC)
-    - [Jokes](#Jokes)
-    - [Translator](#Translator)
+    - [Game](#Game-)
+    - [9gag](#9gag-)
+    - [COC](#COC-)
+    - [Jokes](#Jokes-)
+    - [Translator](#Translator-)
 - [Contributors](#Contributors)
 - [Acknowledgement](#Acknowledgement)
  
