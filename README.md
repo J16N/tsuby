@@ -23,14 +23,14 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 
 # Prefix & Commands
 
-#### Prefix <br>
+### Prefix <br>
 *My prefix is case-insensitive.*
 
 |Option|Default|Example|
 |------|-------|-----------|
 | Prefix|`t-`|`t-help`| 
  
-#### Utility Commands <br>
+### Utility Commands <br>
 *These are some of my utility commands.*
 
 |Option|Commands|Description|
@@ -41,21 +41,21 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**ping**|`t-ping`|Ping me!|
 |**react**|`t-react <emoji>`_or_`<nitromojiname>` | Tsuby will react to the last message of any user.|
 
-#### Game <br>
+### Game <br>
 *I do have some games to kill your time. Don't forget to check it out. ;)*
 
 |Option|Command|Description|
 |------|-------|-----------|
 |**game help**|`t-game help`| All the available games and their related commands.|
 
-***Game related commands:***
+#### Game related commands:
 
 |Option|Commands|Description|
 |------|-------|-----------|
 |**tictactoe**|`t-game tictactoe <@user>`| Play tictactoe with your friend.|
 |**guess**|`t-game guess` | Play a person-guessing game with me.|
 
-#### 9gag <br>
+### 9gag <br>
 *Aaaha! With the new invention of **`infinite-post`** by my owner, these commands are one of the must-try ones.*<br>
 *Nope, no, if you think that this would spam, then you have probably misunderstood the `infinite-post`.*
 
@@ -63,7 +63,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |------|-------|-----------|
 |**9gag help**|`t-9gag help`| All the available memes related commands.|
 
-***9gag related commands:***
+#### 9gag related commands:
 
 |Option|Commands|Description|
 |------|-------|-----------|
@@ -72,7 +72,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 |**popular**|`t-9gag <popular>(optional) <sections>(optional)`| Get random posts from 9gag.com. <br> The <_popular_> includes "_Trending_" and "_Fresh_".|
 |**search**|`t-9gag search <query>`| Get your search result from 9gag.com.|
 
-#### COC <br>
+### COC <br>
 *My owner and supporter were really addictive to this game. :p <br>
 Well who doesn't want to get stats of 'player' and 'clan' right from the discord?* ^^
 
@@ -80,14 +80,14 @@ Well who doesn't want to get stats of 'player' and 'clan' right from the discord
 |------|-------|-----------|
 |**coc help**|`t-coc help`|  All the Clash of Clans related commands.|
 
-***COC related commands:***
+#### COC related commands:
 
 |Option|Commands|Description|
 |------|-------|-----------|
 |**clan**|`t-coc clan <clan_tag>`| Fetch information about the given clan.|
 |**player**|`t-coc player <player tag>`| Fetch information about the given player.|
 
-#### Jokes <br>
+### Jokes <br>
 *Wife: “Windows frozen.” <br>
 Husband: “Pour some warm water over them.” <br>
 Wife: “Computer completely screwed up now.”* <br><br>
@@ -98,14 +98,14 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |------|-------|-----------|
 |**jokes help**|`t-jokes help`|All the available jokes related commands.|
 
-***Jokes related commands:***
+#### Jokes related commands:
 
 |Option|Commands|Description|
 |------|-------|-----------|
 |**category**|`t-jokes category`| Get the list of jokes categories
 ||`t-jokes <category>(optional)`| Get some random jokes.
 
-#### Translator <br>
+### Translator <br>
 *Do you ever need any help with some random visitors in your server who don't speak your language but you want him to take part in the conversation?*
 *Invite me and I can be your translator.* ;)
 
@@ -113,7 +113,7 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |------|-------|-----------|
 |**tr help**|`t-tr help`|All the translation related commands.|
 
-***Translator related commands:***
+#### Translator related commands:
 
 |Option|Commands|Admin Required| Description|
 |------|-------|--------|-----------|
@@ -123,7 +123,7 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |**remove**|`t-tr remove [<user> <user> ... <user>]`|Yes|Disable auto translation of all the mentioned 'user'.|
 |**to**| `t-tr to <dest.> <src> <message>`|No| Translate the message to the 'dest.' language from the 'src' language.|
 
-***Translator sub commands:***
+##### Translator sub commands:
 
 |Option|Command|Description|
 |------|-------|-----------|
