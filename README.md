@@ -148,6 +148,7 @@ Wife: “Computer completely screwed up now.”* <br><br>
 |**codes**|`t-tr codes`| No|Get the list of language codes.|
 |**fr**|`t-tr fr <destination><source>[<user><user>...<user>]`|Yes| Enables auto translation of the messages to the 'dest.' language from the 'src' language of all the mentioned 'user'|
 |**ignore** | `t-tr ignore [<word> <word> ... <word>]`|Yes|Ignores auto-translating the message when started with the given words. Usually 'word' contain other bot's prefixes. <br> **Warning:** *Once the words is added, it cannot be removed.*|
+|**leave**| `t-leave` | YES | Removes all the user's settings of that guild and leaves.|
 |**remove**|`t-tr remove [<user> <user> ... <user>]`|Yes|Disable auto translation of all the mentioned 'user'.|
 |**to**| `t-tr to <dest.> <src> <message>`|No| Translate the message to the 'dest.' language from the 'src' language.|
 
