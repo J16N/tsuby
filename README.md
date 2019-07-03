@@ -11,6 +11,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 
 # Table of Contents
 
+- [Setup](#Setup)
 - [Prefix & Commands](#Prefix--Commands)
     - [Game](#Game-)
     - [9gag](#9gag-)
@@ -20,6 +21,33 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 - [Contributors](#Contributors)
 - [Acknowledgement](#Acknowledgement)
  
+
+# Setup
+*Honestly my setup can be a bit difficult. But still if you would like to run me on your local server then strictly follow the steps.*
+
+1. Get a discord bot token. Instructions can be found [here](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token).
+
+2. Get a COC token.
+
+    1. Make an account [here](https://developer.clashofclans.com) and login.
+    2. Then go [here](https://developer.clashofclans.com/#/account) and create new key.
+    3. Give a key name, description and your public IP address for which you want to generate a token.
+
+3. Gather your mysql server's username, password. This will be used as a database for translations.
+
+4. Clone this repository.
+
+5. Install all your required libraries using `pip install -r requirements.txt`.
+
+6. You need to setup the environment variables as follows. If you don't know how to setup environment variables, then check [here](https://www.schrodinger.com/kb/1842).
+
+    1. TOKEN=Put your bot token here
+    2. COC=Put your clash of clans token here. 
+    3. user=Put your mysql server's username here.
+    4. password=Put your mysql server's password here.
+    5. url=Put your mysql server url here.
+    
+7. Congrats! Now you can run `tsuby.py` and this is how you can host me on your local server.
 
 # Prefix & Commands
 
