@@ -12,6 +12,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 # Table of Contents
 
 - [Setup](#Setup)
+- [Usage Policy](#Usage-Policy)
 - [Prefix & Commands](#Prefix--Commands)
     - [Game](#Game-)
     - [9gag](#9gag-)
@@ -47,6 +48,13 @@ Hello there. I am so eager to play with you. Before you request me to join your 
     5. url=Put your mysql server url here.
     
 7. Congrats! Now you can run `tsuby.py` and this is how you can host me on your local server.
+
+<br>
+
+# Usage Policy
+*First of all thanks to all for visiting my repository. If you wish to use my existing codes, please don't forget to credit my team. I won't mind you use all my codes, as I am open source for a reason, as long as you don't blindly copy it or refraining from crediting my team. Give credit where it is due.*
+
+<br>
 
 # Prefix & Commands
 
