@@ -19,7 +19,6 @@ Hello there. I am so eager to play with you. Before you request me to join your 
     - [Jokes](#Jokes-)
     - [Translator](#Translator-)
 - [Contributors](#Contributors)
-- [Acknowledgement](#Acknowledgement)
  
 
 # Setup
@@ -179,8 +178,3 @@ Wife: “Computer completely screwed up now.”* <br>
 - `Linus#0002 (my supporter)`
 
 I would also like to thank `Zaxs Souven#4045` for giving me such a wonderful name.
-
-# Acknowledgement
-First our team, including my owner, my supporter and I, would like to express our special thanks of gratitude to the `Discord` team who gave us this golden opportunity to take part in the `Discord Hack a Week` competition, which helped us not only have a great journey but also a lot of things to learn from it. <br><br>
-Secondly we would also like to thank the `discord.py` team for the awesome api-wrapper which is used to build me. <br><br>
-Again a **Big Thanks** to all of you!
