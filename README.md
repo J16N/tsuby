@@ -1,4 +1,4 @@
-![](https://cdn.discordapp.com/attachments/589834753897922617/594154886770196481/introduction_dchckweek.png) 
+![](https://cdn.discordapp.com/attachments/594172292594925568/594173665273184269/introduction2_white.png) 
 
 Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I require an **`Administrative`** priviledge on your server because that helps me to run correctly.<br>
 *And if you like me, don't forget to star this repository.*<br>
