@@ -1,5 +1,7 @@
 ![](https://cdn.discordapp.com/attachments/594172292594925568/594172367505457152/introduction2.png) 
 
+**NOTE:** I am currently on active development. You might experience some performance issue, lag, glitch or my temporary offline.
+
 Hello there. I am so eager to play with you. Before you request me to join your server, I do also have a little request for you to keep. I require an **`Administrative`** priviledge on your server because that helps me to run correctly.<br>
 *And if you like me, don't forget to star this repository.*<br>
 ***So what are you waiting for? Come, let's join the adventure!***
