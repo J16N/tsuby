@@ -54,7 +54,7 @@ Hello there. I am so eager to play with you. Before you request me to join your 
 <br>
 
 # Usage Policy
-*First of all thanks for visiting my repository. If you wish to use my existing codes, please don't forget to credit my team. I won't mind you use all my codes, as I am open source for a reason, as long as you don't blindly copy it or refraining from crediting my team.* ***Give credit where it is due!***
+*First of all thanks for visiting my repository. If you wish to use my existing codes, please don't forget to credit my team. I won't mind you use all my codes, as I am open source for a reason, as long as you don't blindly copy it or refraining from crediting my team.* ***Give credits where it is due!***
 
 <br>
 
