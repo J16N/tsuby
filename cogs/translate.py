@@ -497,7 +497,7 @@ class Translate(commands.Cog):
 					await self.bot.pool.release(con)
 
 		else:
-			await ctx.send(f"{ctx.author.mention}, your automatic translation is already disabled. Try `t-tr auto <dest> <src>` to enable it.", delete_after=3.0)
+			await ctx.send(f"{ctx.author.mention}, your automatic translation is already disabled. Try `t-tr auto <dest.> <src>` to enable it.", delete_after=3.0)
 
 
 
@@ -596,7 +596,7 @@ class Translate(commands.Cog):
 
 
 		else:
-			await ctx.send(f"{ctx.author.mention}, your automatic translation is already disabled. Try `t-tr ch <dest> <src>` to enable it.", delete_after=3.0)
+			await ctx.send(f"{ctx.author.mention}, your automatic translation is already disabled. Try `t-tr ch <dest.> <src>` to enable it.", delete_after=3.0)
 
 
 
