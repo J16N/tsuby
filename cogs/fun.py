@@ -24,15 +24,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+
 import discord
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 import asyncio
-import requests
-import urllib
+import aiohttp
 from bs4 import BeautifulSoup
 import random
-import json
 
 class Fun(commands.Cog):
 
@@ -66,6 +65,7 @@ class Fun(commands.Cog):
 
 		self.meme_category = {
 			"India": "india",
+			"UK": "uk",
 			"USA": "usa",
 			"Philippines": "philippines",
 			"Italy": "italy",
@@ -135,8 +135,8 @@ class Fun(commands.Cog):
 
 		self.meme_categories = {key.lower(): value for key, value in self.meme_category.items()}
 
-		self.like = '<a:tthumbsup:594132184202346516>'
-		self.dislike = '<a:tthumbsdown:594132184315461632>'
+		self.like = '<a:tthumbsup:611083702654599169>'
+		self.dislike = '<a:tthumbsdown:611083707696152577>'
 
 	
 
@@ -204,19 +204,18 @@ class Fun(commands.Cog):
 	@commands.group(case_insensitive=True, invoke_without_command=True)
 	@commands.cooldown(10,600,type=BucketType.member)
 	@commands.guild_only()
-	async def jokes(self, ctx, *category):
+	async def jokes(self, ctx, *, category=""):
 		'''Our main jokes command. This posts random jokes'''
 		
 		await ctx.message.channel.trigger_typing()
-		category = ' '.join(category).lower()
 
-		if category not in self.jokes_category and category:
-			temp = await ctx.send("`t-jokes help`")
-			await temp.delete(delay=5.0)
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
 
-			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-				# delete the message command
-				await ctx.message.delete(delay=5.0)
+		
+		if category.lower() not in self.jokes_category and category:
+			await ctx.send("`t-jokes help`", delete_after=5.0)
 		
 		else:
 
@@ -225,10 +224,12 @@ class Fun(commands.Cog):
 			else:
 				url = "http://www.funnyshortjokes.com/"
 
-			page = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+			session = aiohttp.ClientSession()
+			page = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-			if page.status_code == 200:
-				soup = BeautifulSoup(page.content, 'html.parser')
+			if page.status == 200:
+				page = await page.text()
+				soup = BeautifulSoup(page, 'html.parser')
 				lastpage = int(soup.select("div.navigation-pages span.item")[-1].get_text()) #getting the last page number
 
 				if category in self.jokes_category:
@@ -236,10 +237,11 @@ class Fun(commands.Cog):
 				else:
 					url = "http://www.funnyshortjokes.com/page/"+str(random.randint(1, lastpage))
 
-				page = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+				page = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-				if page.status_code == 200:
-					soup = BeautifulSoup(page.content, 'html.parser')
+				if page.status == 200:
+					page = await page.text()
+					soup = BeautifulSoup(page, 'html.parser')
 
 					#getting all the jokes from the random page
 					joke_heading_list = soup.select("h3")
@@ -287,10 +289,11 @@ class Fun(commands.Cog):
 									else:
 										url = "http://www.funnyshortjokes.com/page/"+str(random.randint(1, lastpage))
 
-									page = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+									page = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-									if page.status_code == 200:
-										soup = BeautifulSoup(page.content, 'html.parser')
+									if page.status == 200:
+										page = await page.text()
+										soup = BeautifulSoup(page, 'html.parser')
 
 										#getting all the jokes from the random page
 										joke_heading_list = soup.select("h3")
@@ -311,7 +314,8 @@ class Fun(commands.Cog):
 
 									else:
 										await bot_post.clear_reactions()
-										temp = await ctx.send(f"`The server responds`\n**ERROR {page.status_code}**")
+										await session.close()
+										temp = await ctx.send(f"`The server responded`\n**ERROR {page.status_code}**")
 										await temp.delete(delay=5.0)
 										break
 
@@ -322,25 +326,18 @@ class Fun(commands.Cog):
 
 
 						except asyncio.TimeoutError:
+							await session.close()
 							await bot_post.clear_reactions()
 							break
 				
 
 				else:
-					temp = await ctx.send(f"`The server responds`\n**ERROR {page.status_code}**")
-					await temp.delete(delay=5.0)
-
-					if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-						# delete the message command
-						await ctx.message.delete(delay=5.0)
+					await session.close()
+					await ctx.send(f"`The server responded`\n**ERROR {page.status_code}**", delete_after=5.0)
 			
 			else:
-				temp = await ctx.send(f"`The server responds`\n**ERROR {page.status_code}**")
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await session.close()
+				await ctx.send(f"`The server responded`\n**ERROR {page.status_code}**", delete_after=5.0)
 
 
 	
@@ -349,6 +346,7 @@ class Fun(commands.Cog):
 
 
 	@jokes.command(name="category")
+	@commands.guild_only()
 	async def category_jokes(self, ctx):
 		'''Lists Jokes category'''
 		
@@ -370,20 +368,17 @@ class Fun(commands.Cog):
 	@commands.group(case_insensitive=True, invoke_without_command=True, name="9gag")
 	@commands.guild_only()
 	@commands.cooldown(10,600,type=BucketType.member)
-	async def ninegag(self, ctx, *category):
+	async def ninegag(self, ctx, *, category=None):
 		'''Posts random meme'''
 
 		await ctx.message.channel.trigger_typing()
 
-		category = ' '.join(category).lower()
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
 
 		if category not in list(self.meme_categories.keys()) and category:
-			temp = await ctx.send("`t-9gag sections`")
-			await temp.delete(delay=5.0)
-
-			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-				# delete the message command
-				await ctx.message.delete(delay=5.0)
+			await ctx.send("`t-9gag sections`", delete_after=5.0)
 
 		else:
 
@@ -392,10 +387,11 @@ class Fun(commands.Cog):
 			else:
 				url = "https://9gag.com/v1/group-posts/group/default/type/hot?"
 
-			response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+			session = aiohttp.ClientSession()
+			response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-			if response.status_code == 200:
-				resource = json.loads(response.content.decode('utf-8'))
+			if response.status == 200:
+				resource = await response.json()
 
 				posts = resource['data']['posts']
 				total_posts = len(posts)
@@ -458,10 +454,10 @@ class Fun(commands.Cog):
 
 								url = url.split("?")[0] + "?" + resource['data']["nextCursor"]
 
-								response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+								response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-								if response.status_code == 200:
-									resource = json.loads(response.content.decode('utf-8'))
+								if response.status == 200:
+									resource = await response.json()
 
 									posts = resource['data']['posts']
 									total_posts = len(posts)
@@ -488,8 +484,8 @@ class Fun(commands.Cog):
 
 								else:
 									await bot_post.clear_reactions()
-									temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-									await temp.delete(delay=5.0)
+									await session.close()
+									await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 									break
 
 						else:
@@ -498,17 +494,14 @@ class Fun(commands.Cog):
 
 
 					except asyncio.TimeoutError:
+						await session.close()
 						await bot_post.clear_reactions()
 						break
 
 
 			else:
-				temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await session.close()
+				await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 
 
 	
@@ -516,20 +509,18 @@ class Fun(commands.Cog):
 
 
 	@ninegag.command()
-	async def trending(self, ctx, *category):
+	@commands.guild_only()
+	async def trending(self, ctx, *, category=None):
 		'''Fetches trends from 9GAG.com'''
 
 		await ctx.message.channel.trigger_typing()
 
-		category = ' '.join(category).lower()
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
 
 		if category not in list(self.meme_categories.keys()) and category:
-			temp = await ctx.send("`t-9gag sections`")
-			await temp.delete(delay=5.0)
-
-			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-				# delete the message command
-				await ctx.message.delete(delay=5.0)
+			await ctx.send("`t-9gag sections`", delete_after=5.0)
 
 		else:
 
@@ -538,10 +529,12 @@ class Fun(commands.Cog):
 			else:
 				url = "https://9gag.com/v1/group-posts/group/default/type/trending?"
 
-			response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+			
+			session = aiohttp.ClientSession()
+			response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-			if response.status_code == 200:
-				resource = json.loads(response.content.decode('utf-8'))
+			if response.status == 200:
+				resource = await response.json()
 
 				posts = resource['data']['posts']
 				total_posts = len(posts)
@@ -604,10 +597,10 @@ class Fun(commands.Cog):
 
 								url = url.split("?")[0] + "?" + resource['data']["nextCursor"]
 
-								response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+								response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-								if response.status_code == 200:
-									resource = json.loads(response.content.decode('utf-8'))
+								if response.status == 200:
+									resource = await response.json()
 
 									posts = resource['data']['posts']
 									total_posts = len(posts)
@@ -634,8 +627,8 @@ class Fun(commands.Cog):
 
 								else:
 									await bot_post.clear_reactions()
-									temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-									await temp.delete(delay=5.0)
+									await session.close()
+									await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 									break
 
 						else:
@@ -645,16 +638,13 @@ class Fun(commands.Cog):
 
 					except asyncio.TimeoutError:
 						await bot_post.clear_reactions()
+						await session.close()
 						break
 
 
 			else:
-				temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await session.close()
+				await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 
 
 
@@ -663,20 +653,18 @@ class Fun(commands.Cog):
 
 
 	@ninegag.command()
-	async def fresh(self, ctx, *category):
+	@commands.guild_only()
+	async def fresh(self, ctx, *, category=None):
 		'''Fetches fresh from 9GAG.com'''
 
 		await ctx.message.channel.trigger_typing()
-		
-		category = ' '.join(category).lower()
+
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
 
 		if category not in list(self.meme_categories.keys()) and category:
-			temp = await ctx.send("`t-9gag sections`")
-			await temp.delete(delay=5.0)
-
-			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-				# delete the message command
-				await ctx.message.delete(delay=5.0)
+			await ctx.send("`t-9gag sections`", delete_after=5.0)
 
 		else:
 
@@ -685,10 +673,11 @@ class Fun(commands.Cog):
 			else:
 				url = "https://9gag.com/v1/group-posts/group/default/type/fresh?"
 
-			response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+			session = aiohttp.ClientSession()
+			response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-			if response.status_code == 200:
-				resource = json.loads(response.content.decode('utf-8'))
+			if response.status == 200:
+				resource = await response.json()
 
 				posts = resource['data']['posts']
 				total_posts = len(posts)
@@ -753,8 +742,8 @@ class Fun(commands.Cog):
 
 								response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-								if response.status_code == 200:
-									resource = json.loads(response.content.decode('utf-8'))
+								if response.status == 200:
+									resource = await response.json()
 
 									posts = resource['data']['posts']
 									total_posts = len(posts)
@@ -781,8 +770,8 @@ class Fun(commands.Cog):
 
 								else:
 									await bot_post.clear_reactions()
-									temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-									await temp.delete(delay=5.0)
+									await session.close()
+									await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 									break
 
 						else:
@@ -792,42 +781,40 @@ class Fun(commands.Cog):
 
 					except asyncio.TimeoutError:
 						await bot_post.clear_reactions()
+						await session.close()
 						break
 
 
 			else:
-				temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await session.close()
+				await ctx.send(f"`The server responded`\n**ERROR {response.status_code}**", delete_after=5.0)
 
 
 
 
 	@ninegag.command()
-	async def search(self, ctx, query=None):
+	@commands.guild_only()
+	async def search(self, ctx, *, query=None):
 		'''Fetches trends from 9GAG.com'''
 
 		await ctx.message.channel.trigger_typing()
 
-		if query is None:
-			temp = await ctx.send("*You need to tell me a query.*\n`t-9gag search <query>`")
-			await temp.delete(delay=5.0)
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
 
-			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-				# delete the message command
-				await ctx.message.delete(delay=5.0)
+		if query is None:
+			await ctx.send("*You need to tell me a query.*\n`t-9gag search <query>`", delete_after=5.0)
 
 		else:
 
 			url = "https://9gag.com/v1/search-posts?query=" + query
 
-			response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+			session = aiohttp.ClientSession()
+			response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-			if response.status_code == 200:
-				resource = json.loads(response.content.decode('utf-8'))
+			if response.status == 200:
+				resource = await response.json()
 
 				posts = resource['data']['posts']
 				total_posts = len(posts)
@@ -890,10 +877,10 @@ class Fun(commands.Cog):
 
 								url = url.split("?")[0] + "?query=" + resource['data']["nextCursor"]
 
-								response = requests.get(url=url, headers=self.headers[random.randint(0, 11)])
+								response = await session.get(url=url, headers=self.headers[random.randint(0, 11)])
 
-								if response.status_code == 200:
-									resource = json.loads(response.content.decode('utf-8'))
+								if response.status == 200:
+									resource = await response.json()
 
 									posts = resource['data']['posts']
 									total_posts = len(posts)
@@ -920,8 +907,8 @@ class Fun(commands.Cog):
 
 								else:
 									await bot_post.clear_reactions()
-									temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-									await temp.delete(delay=5.0)
+									await session.close()
+									await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**", delete_after=5.0)
 									break
 
 						else:
@@ -931,16 +918,13 @@ class Fun(commands.Cog):
 
 					except asyncio.TimeoutError:
 						await bot_post.clear_reactions()
+						await session.close()
 						break
 
 
 			else:
-				temp = await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**")
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await session.close()
+				await ctx.send(f"`The server responds`\n**ERROR {response.status_code}**", delete_after=5.0)
 
 
 
@@ -951,6 +935,7 @@ class Fun(commands.Cog):
 
 
 	@ninegag.command(name="sections")
+	@commands.guild_only()
 	async def category_meme(self, ctx):
 		'''Lists Meme Category'''
 
@@ -994,7 +979,7 @@ class Fun(commands.Cog):
 		embed.set_author(name="Help")
 		embed.add_field(name="**t-jokes <category> (optional)**", value="`└─ Get some random jokes.`", inline=False)
 		embed.add_field(name="**t-jokes category**", value="`└─ Get the list of jokes categories.`", inline=False)
-		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
+		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 
 		if ctx.message.guild is not None:
 			await ctx.message.add_reaction("📧")
@@ -1013,7 +998,7 @@ class Fun(commands.Cog):
 		embed.add_field(name="**t-9gag <popular> (optional) <sections> (optional)**", value="`└─ Get some random posts from 9gag.com.`", inline=False)
 		embed.add_field(name="**t-9gag sections**", value="`└─ Get the list of 9gag sections. \nNOTE: If your country is not in the 'sections' and can still able to view it on 9gag.com use 't-feedback' to inform about it. \n\nThe 'popular' includes: \nTrending\nFresh`", inline=False)
 		embed.add_field(name="**t-9gag search <query>**", value="`└─ Search 9gag and get your search result.`", inline=False)
-		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
+		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 
 		if ctx.message.guild is not None:
 			await ctx.message.add_reaction("📧")

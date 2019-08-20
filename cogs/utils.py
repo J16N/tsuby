@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+
 import discord
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
@@ -70,11 +71,11 @@ class Utils(commands.Cog):
 	async def on_ready(self):
 		'''Things to perform when the bot gets ready'''
 
-		print("The api version is {0}".format(discord.__version__))
+		print(f"The api version is {discord.__version__}")
 		print("I'm in")
 		print(self.bot.user)
 		print(f"Guilds: {len(self.bot.guilds)}")
-		print("\nInvite Link: https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=1610087751&scope=bot")
+		print("\nInvite Link: https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot")
 		self.bot.loop.create_task(self.status_task())	
 
 
@@ -86,7 +87,7 @@ class Utils(commands.Cog):
 		'''Pings the bot'''
 		
 		if ctx.message.guild is not None:
-			ping = await ctx.send(f"{ctx.author.mention} ***PONG***  ***in***  **{round(self.bot.latency*1000)} ms** ***!!!***")
+			ping = await ctx.send(f"{ctx.author.mention}, ***PONG!*** (~{round(self.bot.latency*1000)}ms)")
 			await ping.delete(delay=3.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
@@ -94,7 +95,7 @@ class Utils(commands.Cog):
 				await ctx.message.delete(delay=3.0)
 
 		else:
-			await ctx.send(f"***PONG***  ***in***  **{round(self.bot.latency*1000)} ms** ***!!!***")
+			await ctx.send(f"***PONG!*** (~{round(self.bot.latency*1000)}ms)")
 
 
 	
@@ -107,7 +108,9 @@ class Utils(commands.Cog):
 		await ctx.message.channel.trigger_typing()
 
 		# list of names of custom animated emojis
-		emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + [emoji.name for emoji in self.bot.get_guild(589834753897922615).emojis if emoji.animated]
+		emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
+			[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
+			[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
 
 		emoji_list = sorted(emoji_list)
 
@@ -120,22 +123,22 @@ class Utils(commands.Cog):
 		emoji_help5 = ''
 		emoji_help6 = ''
 
-		for emoji in emoji_list[:17]:
+		for emoji in emoji_list[:18]:
 			emoji_help1 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
-		for emoji in emoji_list[17:34]:
+		for emoji in emoji_list[18:36]:
 			emoji_help2 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
-		for emoji in emoji_list[34:51]:
+		for emoji in emoji_list[36:54]:
 			emoji_help3 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
-		for emoji in emoji_list[51:68]:
+		for emoji in emoji_list[54:72]:
 			emoji_help4 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
-		for emoji in emoji_list[68:85]:
+		for emoji in emoji_list[72:90]:
 			emoji_help5 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
-		for emoji in emoji_list[85:]:
+		for emoji in emoji_list[90:]:
 			emoji_help6 += f"*{emoji}* : {discord.utils.get(self.bot.emojis, name=emoji)}\n\n"
 
 		embed = discord.Embed(description='***NITROMOJIS***', color=0xF5C46F)
@@ -145,8 +148,13 @@ class Utils(commands.Cog):
 		embed.add_field(name='\u200b', value = emoji_help4, inline=True)
 		embed.add_field(name='\u200b', value = emoji_help5, inline=True)
 		embed.add_field(name='\u200b', value = emoji_help6, inline=True)
+		embed.set_footer(text="The prefix of every nitromoji is 't'.", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 		
-		await ctx.send(embed=embed)
+		await ctx.send(embed=embed, delete_after=120.0)
+
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=120.0)
 
 
 	
@@ -168,7 +176,9 @@ class Utils(commands.Cog):
 			names = [name.lower().replace(":", "") for name in names]
 			
 			# list of names of custom animated emojis
-			emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + [emoji.name for emoji in self.bot.get_guild(589834753897922615).emojis if emoji.animated]
+			emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
+				[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
+				[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
 
 			# here I could have used set intersection but I didn't because that won't work for repititive emojis 
 			emoji_names = [name for name in names if name in emoji_list]
@@ -198,6 +208,8 @@ class Utils(commands.Cog):
 				await ctx.message.delete(delay=15.0)
 
 
+
+
 	
 
 	@commands.command()
@@ -217,7 +229,9 @@ class Utils(commands.Cog):
 
 			if reactions: # here the bot will react with custom emotes
 
-				emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis] + [emoji.name for emoji in self.bot.get_guild(589834753897922615).emojis if emoji.animated]
+				emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
+					[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
+					[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
 				reactions = list(reactions.intersection(reactions)) #removing duplicates
 				emoji_names = [name.replace(":", "") for name in reactions if name.replace(":", "") in emoji_list]
 				react = react + [discord.utils.get(self.bot.emojis, name=name) for name in emoji_names]
@@ -270,7 +284,7 @@ class Utils(commands.Cog):
 			await channel.send(embed=embed)
 			
 			#notify user that their feedback has been sent
-			await ctx.send("*Your feedback has been sent successfully.* :white_check_mark:")
+			await ctx.send("*Your feedback has been sent successfully.* :white_check_mark:", delete_after=5.0)
 
 			self.feedback += 1 #updating our feedback number
 
@@ -282,11 +296,11 @@ class Utils(commands.Cog):
 		else:
 			temp = await ctx.send("`t-feedback <feedback_message>`")
 
-			await temp.delete(delay=15.0)
+			await temp.delete(delay=5.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
-				await ctx.message.delete(delay=15.0)
+				await ctx.message.delete(delay=5.0)
 
 
 	@commands.command()
@@ -300,8 +314,10 @@ class Utils(commands.Cog):
 
 	@commands.command()
 	@commands.cooldown(10,600,type=BucketType.member)
-	async def info(self, ctx):
+	async def about(self, ctx):
 		'''Lists some info about Tsuby'''
+
+		url = "https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot"
 
 		now = datetime.utcnow()
 		delta = now - start_time
@@ -316,9 +332,9 @@ class Utils(commands.Cog):
 		
 		uptime_stamp = time_format.format(d=days, h=hours, m=minutes, s=seconds)
 
-		embed = discord.Embed(description=f"Hey there {ctx.author.name}!\n*Seems like you're getting interested in me.* <a:tcowboy:581728970483957761>", color=0x9FFA99)
+		embed = discord.Embed(description=f"Hey there {ctx.author.name}!\n*Seems like you're getting interested in me.* <a:tcowboy:581728970483957761>\nYou can [`invite`]({url}) me to your server. <a:tpandarun:574530725475516432>", color=0x9FFA99)
 		embed.set_author(name="About Me")
-		embed.set_footer(text="I believe every Humans and bots can mutually thrive on this planet.", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
+		embed.set_footer(text="I believe every Humans and bots can mutually thrive on this planet.", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 		embed.add_field(name="**My Creator**", value="`Tsubasa#7917`")
 		embed.add_field(name="**My Supporter**", value="`Linus#0002`")
 		embed.add_field(name="**My Name-Giver**", value="`Zaxs Souven#4045`")
@@ -327,6 +343,72 @@ class Utils(commands.Cog):
 		embed.add_field(name="**Remark**", value="I am getting smarter everyday...\nI hope will do the welfare to the mankind soon.")
 
 		await ctx.send(embed=embed)
+
+
+	@commands.command()
+	@commands.guild_only()
+	@commands.has_permissions(manage_messages=True)
+	@commands.cooldown(10,600,type=BucketType.member)
+	async def clear(self, ctx, number=None, mention=None):
+		'''Clears the given number of messages'''
+
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete(delay=5.0)
+
+		try:
+			number = int(number)
+
+			if mention:
+				member = await commands.MemberConverter().convert(ctx, mention)
+
+			def check_user(user):
+				if mention:
+					return user.author == member
+				else:
+					return True
+
+			if number == 0:
+				await ctx.message.channel.purge(check=check_user)
+			else:
+				number += 1
+				await ctx.message.channel.purge(limit=number, check=check_user)
+
+		except:
+			temp = await ctx.send("`t-clear <total_messages_to_search_through>(int) <mentioned_users>(optional)`")
+
+			await temp.delete(delay=5.0)
+
+
+
+	def bot_owner(ctx):
+		return ctx.message.author.id == 302467968095223820 
+
+
+	@commands.command()
+	async def announce(self, ctx, message):
+		'''Announce new features to all the servers'''
+
+		for guild in self.bot.guilds:
+			
+			general = discord.utils.get(guild.text_channels, name='general')
+			announcement = discord.utils.get(guild.text_channels, name='announcement')
+
+			if announcement and announcement.permissions_for(guild.me).send_messages:
+				await announcement.send(message)
+
+			elif general and general.permissions_for(guild.me).send_messages:
+				await general.send(message)
+
+			else:
+				for channel in guild.text_channels:
+					try:
+						await channel.send(message)
+						break
+					except:
+						continue
+
+
 	
 
 
@@ -334,13 +416,38 @@ class Utils(commands.Cog):
 	async def on_guild_join(self, guild):
 		'''When the bot joins the guild'''
 
-		for channel in guild.text_channels:
-			try:
-				await channel.send('**Thanks for inviting me to your server.** <a:tsmileface:581728033967177744>')
-				break
-			except:
-				continue
+		general = discord.utils.get(guild.text_channels, name='general')
+		welcome = discord.utils.get(guild.text_channels, name='welcome')
 
+		if welcome and welcome.permissions_for(guild.me).send_messages:
+			await welcome.send('**Thanks for inviting me to your server.** <a:tsmileface:581728033967177744>')
+
+		elif general and general.permissions_for(guild.me).send_messages:
+			await general.send('**Thanks for inviting me to your server.** <a:tsmileface:581728033967177744>')
+
+		else:	
+			for channel in guild.text_channels:
+				try:
+					await channel.send('**Thanks for inviting me to your server.** <a:tsmileface:581728033967177744>')
+					break
+				except:
+					continue
+
+
+	
+	@commands.Cog.listener()
+	async def on_message(self, message):
+		'''When someone mentions Tsuby'''
+
+		ctx = await self.bot.get_context(message)
+
+		if not ctx.valid:
+			if message.guild:
+				if message.guild.me.mentioned_in(message):
+					await message.add_reaction('<a:tsparklingheart:594132183669538826>')
+			else:
+				if self.bot.user.mentioned_in(message):
+					await message.add_reaction('<a:tsparklingheart:594132183669538826>')
 
 def setup(bot):
 	bot.add_cog(Utils(bot))

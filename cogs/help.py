@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+
 import discord
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
@@ -42,8 +43,10 @@ class Help(commands.Cog):
 		embed = discord.Embed(description="*I found the following list of commands. The prefix and commands are case-insensitive.*", color=0xA78BE1)
 		embed.set_author(name="Help")
 		
+		embed.add_field(name="**t-clear <number>(int) <mentioned_user>(optional)**", value="`└─ Deletes all the messages of a channel. The <number> is used to search the total number of messages. Put 0 if you want me to search through all the messages.\nThe optional <mentioned_user> is given to delete the message of that particular user. Remember that the <number> used will not necessarily delete the total number of messages of the <mentioned_user>.`", inline=False)
 		embed.add_field(name="**t-feedback <your_feedback>**", value="`└─ Sends feedback to my owner.`", inline=False)
 		embed.add_field(name="**t-info**", value="`└─ Lists some general info about me.`", inline=False)
+		embed.add_field(name="**t-invite**", value="`└─ Invite me to your server.`", inline=False)
 		embed.add_field(name="**t-nitromojis**", value="`└─ Lists all my nitromojis.`", inline=False)
 		embed.add_field(name="**t-ne [<nitromoji>, <nitromoji> ... <nitromoji>]**", value="`└─ Sends all the list of nitromojis. The alias of this command is 't-nitro'`", inline=False)
 		embed.add_field(name="**t-ping**", value="`└─ Ping me.`", inline=False)
@@ -54,7 +57,7 @@ class Help(commands.Cog):
 		embed.add_field(name="**t-game help**", value="`└─ 2 command. All my available games and their related commands.`", inline=False)
 		embed.add_field(name="**t-jokes help**", value="`└─ 1 command. All my available jokes related commands.`", inline=False)
 		embed.add_field(name="**t-tr help**", value="`└─ 7 commands. All my translation related commands.`", inline=False)
-		embed.set_footer(text="I am glad to help you out :D", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
+		embed.set_footer(text="I am glad to help you out :D", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 
 		if ctx.message.guild is not None:
 			await ctx.message.add_reaction("📧")

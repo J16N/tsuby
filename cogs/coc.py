@@ -24,15 +24,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+
 import discord
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 import asyncio
 import os
-import requests
-import json
-import urllib
 import re
+import urllib
+import aiohttp
 
 class Coc(commands.Cog):
 	
@@ -40,13 +40,16 @@ class Coc(commands.Cog):
 
 		self.bot = bot
 
+		# need to remove some emojis (if present) from the clan member name
+		self.emoji_regex = open('emoji_regex.txt', 'r').read()
+
 		#coc api token
 		self.coc_token = os.environ.get("COC")
 
 		self.headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {0}'.format(self.coc_token)}
 
 
-	async def paginator(self, ctx, pages, **footer):
+	async def paginator(self, ctx, session, pages, **footer):
 		'''Paginates the given embeds into pages'''
 		
 		buttons = ['<:myleft:584972740595810304>', '<:myright:584973342793138197>']
@@ -70,7 +73,7 @@ class Coc(commands.Cog):
 
 		while True:
 			try:
-				reaction, user = await self.bot.wait_for('reaction_add', timeout=30.0, check=check)
+				reaction, user = await self.bot.wait_for('reaction_add', timeout=120.0, check=check)
 
 				if str(reaction.emoji) == '<:myright:584973342793138197>' and (current_page + 1) < total_pages:
 					await message.remove_reaction(reaction, user)
@@ -99,6 +102,7 @@ class Coc(commands.Cog):
 			
 			except asyncio.TimeoutError:
 				await message.clear_reactions()
+				await session.close()
 				break
 
 
@@ -116,12 +120,12 @@ class Coc(commands.Cog):
 	async def help(self, ctx):
 		'''Help command for COC'''
 
-		embed = discord.Embed(description="*I found the following list of commands*", color=0xB47211)
+		embed = discord.Embed(description="*I found the following list of commands.*", color=0xB47211)
 		
 		embed.set_author(name="Help")
 		embed.add_field(name="**t-coc clan <clan_tag>**", value="`└─ Fetch information about the given clan.`", inline=False)
 		embed.add_field(name="**t-coc player <player_tag>**", value="`└─ Fetch information about the given player.`", inline=False)
-		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/cogs/tsuby.png")
+		embed.set_footer(text="Type t-help to get the list of all commands", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 
 		if ctx.message.guild is not None:
 			await ctx.message.add_reaction("📧")
@@ -142,12 +146,13 @@ class Coc(commands.Cog):
 			
 			url = "https://api.clashofclans.com/v1/players/" + urllib.parse.quote_plus(tag)
 
-			response = requests.get(url, headers=self.headers)
+			session = aiohttp.ClientSession()
+			response = await session.get(url, headers=self.headers)
 
-			if response.status_code == 200:
+			if response.status == 200:
 
 				# retrieving the data from json
-				data = json.loads(response.content.decode('utf-8'))
+				data = await response.json()
 
 				space = ' \u200B '*8
 				gen_info = "**TAG:** *{0}* {1} **XP:** *{2}* \u200B ".format(data['tag'], space, data['expLevel'])
@@ -325,7 +330,7 @@ class Coc(commands.Cog):
 						embed_5.add_field(name=f"**{troop['name']}**", value=f"**Level:** {troop['level']}\n**Max Level:** {troop['maxLevel']}\n\u200B\n", inline=True)
 
 
-				if 'heroes' in data:
+				if 'heroes' in data and data['heroes']:
 					embed_6 = discord.Embed(description=gen_info, color=0xB47211)
 
 					if 'league' in data:
@@ -358,20 +363,20 @@ class Coc(commands.Cog):
 				# we need to filter the embed list since we don't know which embed will not be None
 				embed_list = [embed_1, embed_2, embed_3, embed_4, embed_5, embed_6, embed_7]
 				filtered_embed_list = list(filter(None, embed_list))
-
-				print(filtered_embed_list)
 				
 				if 'clan' in data:
-					await self.paginator(ctx, filtered_embed_list, text=embed_1.footer.text, url=embed_1.footer.icon_url)
+					await self.paginator(ctx, session, filtered_embed_list, text=embed_1.footer.text, url=embed_1.footer.icon_url)
 				else:
-					await self.paginator(ctx, filtered_embed_list, text=None, url=None)
+					await self.paginator(ctx, session, filtered_embed_list, text=None, url=None)
 
 
 
 
 			else:
-				# let's just handle the error and show the user what server respons
-				await ctx.send("`The server responds`\n**ERROR {}:**\n*{}*".format(response.status_code, json.loads(response.content.decode('utf-8'))['reason']))
+				await session.close()
+				# let's just handle the error and show the user what server responds
+				data = await response.json()
+				await ctx.send(f"`The server responded`\n**ERROR {response.status}:**\n*{data['reason']}*")
 
 		else:
 
@@ -390,14 +395,15 @@ class Coc(commands.Cog):
 			
 			url = "https://api.clashofclans.com/v1/clans/" + urllib.parse.quote_plus(tag)
 
-			response = requests.get(url, headers=self.headers)
+			session = aiohttp.ClientSession()
+			response = await session.get(url, headers=self.headers)
 
-			if response.status_code == 200:
-				data = json.loads(response.content.decode('utf-8'))
+			if response.status == 200:
+				data = await response.json()
 
 				gen_info = "**TAG:** {}\n{}".format(data['tag'], data['description'])
 
-				if 'description' in data:
+				if 'description' in data and data['description']:
 					gen_info = "**TAG:** {}\n\n*{}*\n".format(data['tag'], data['description'])
 					embed_1 = discord.Embed(description=gen_info, color=0xB47211)
 
@@ -439,7 +445,9 @@ class Coc(commands.Cog):
 					embed_2.set_author(name=data['name']+' - Members', icon_url=data['badgeUrls']['large'])
 
 					for member in data['memberList']:
-						embed_2.add_field(name=member['name'], value='`'+member['tag']+'`')
+						clan_member = member['name'].translate(member['name'].maketrans('', '', ''.join(re.findall(self.emoji_regex, member['name']))))
+						clan_member = clan_member.replace('*', '')
+						embed_2.add_field(name=f"**{clan_member}**", value=f'**Tag:** *`{member["tag"]}`*\n**Role:** *`{member["role"]}`*')
 
 					embed_3 = None
 
@@ -449,7 +457,9 @@ class Coc(commands.Cog):
 					embed_2.set_author(name=data['name']+' - Members', icon_url=data['badgeUrls']['large'])
 
 					for member in data['memberList'][:25]:
-						embed_2.add_field(name=member['name'], value='`'+member['tag']+'`')
+						clan_member = member['name'].translate(member['name'].maketrans('', '', ''.join(re.findall(self.emoji_regex, member['name']))))
+						clan_member = clan_member.replace('*', '')
+						embed_2.add_field(name=f"**{clan_member}**", value=f'**Tag:** *`{member["tag"]}`*\n**Role:** *`{member["role"]}`*')
 
 
 					embed_3 = discord.Embed(description=gen_info, color=0xB47211)
@@ -457,7 +467,9 @@ class Coc(commands.Cog):
 					embed_3.set_author(name=data['name']+' - Members', icon_url=data['badgeUrls']['large'])
 
 					for member in data['memberList'][25:]:
-						embed_3.add_field(name=member['name'], value='`'+member['tag']+'`')
+						clan_member = member['name'].translate(member['name'].maketrans('', '', ''.join(re.findall(self.emoji_regex, member['name']))))
+						clan_member = clan_member.replace('*', '')
+						embed_3.add_field(name=f"**{clan_member}**", value=f'**Tag:** *`{member["tag"]}`*\n**Role:** *`{member["role"]}`*')
 
 				else:
 					embed_2 = None
@@ -466,12 +478,14 @@ class Coc(commands.Cog):
 				embed_list = [embed_1, embed_2, embed_3]
 				filtered_embed_list = list(filter(None, embed_list))
 
-				await self.paginator(ctx, filtered_embed_list, text=None, url=None)
+				await self.paginator(ctx, session, filtered_embed_list, text=None, url=None)
 
 
 			else:
-				# let's just handle the error and show the user what server respons
-				await ctx.send("`The server responds`\n**ERROR {}:**\n*{}*".format(response.status_code, json.loads(response.content.decode('utf-8'))['reason']))
+				await session.close()
+				# let's just handle the error and show the user what server responds
+				data = await response.json()
+				await ctx.send(f"`The server responded`\n**ERROR {response.status}:**\n*{data['reason']}*")
 
 		
 		else:

@@ -25,42 +25,45 @@ SOFTWARE.
 """
 
 
+import os
 import discord
 from discord.ext import commands
-import asyncio
-import os
-import asyncpg
+from discord.ext.commands.cooldowns import BucketType
+import spotify
 
-# Command prefix for using the bot
-BOT_PREFIX = [
-	't- ', 'T- ', 
-	't-', 'T-', 
-	'<@554689083289632781> ', '<@554689083289632781>'
-]
+class Music(commands.Cog):
 
-cogs = ['cogs.translate', 'cogs.coc', 'cogs.utils', 'cogs.help', 'cogs.game', 'cogs.fun']
+	def __init__(self, bot):
 
-async def run():
-	'''Runs the bot and connect to the database'''
+		self.bot = bot
 
-	bot = commands.Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
-
-	bot.pool = await asyncpg.create_pool(host='localhost', database='tsuby', user='postgres', password='Jishan 007')
-
-	for cog in cogs:
-		bot.load_extension(cog)
-
-	# bot token, VERY IMPORTANT
-	token = os.environ.get("TOKEN")
-
-	# running our bot with the token finally
-	try:
-		await bot.start(token)
-	except:
-		# Make sure to do these steps if you use a command to exit the bot
-		await db.close()
-		await bot.logout()
+		self.client_id = os.environ.get("spotify_client")
+		self.client_secret = os.environ.get("spotify_secret")
+		self.client_token = None
 
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(run())
+	@commands.group(case_insensitive=True)
+	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.guild_only()
+	async def music(self, ctx):
+		'''This is our main music command. Other commands are just sub-commands of this.'''
+
+		if ctx.invoked_subcommand is None:
+			await ctx.send('`t-music help`')
+
+
+	@music.command()
+	@commands.guild_only()
+	async def spotify(self, ctx, song_data):
+		'''Streams directly from spotify'''
+
+
+
+
+
+		
+
+
+
+def setup(bot):
+	bot.add_cog(Music(bot))
