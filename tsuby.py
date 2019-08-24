@@ -30,6 +30,7 @@ from discord.ext import commands
 import asyncio
 import os
 import asyncpg
+import configparser
 
 # Command prefix for using the bot
 BOT_PREFIX = [
@@ -45,13 +46,21 @@ async def run():
 
 	bot = commands.Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 
-	bot.pool = await asyncpg.create_pool(host='localhost', database='tsuby', user='postgres', password=password)
+	bot.config = configparser.RawConfigParser()
+	bot.config.read("config.txt")
+
+	bot.pool = await asyncpg.create_pool(
+		host=bot.config.get("my-config", "host"), 
+		database=bot.config.get("my-config", "database"), 
+		user=bot.config.get("my-config", "user"), 
+		password=bot.config.get("my-config", "password")
+	)
 
 	for cog in cogs:
 		bot.load_extension(cog)
 
 	# bot token, VERY IMPORTANT
-	token = os.environ.get("TOKEN")
+	token = bot.config.get("my-config", "TOKEN")
 
 	# running our bot with the token finally
 	try:
