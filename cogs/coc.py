@@ -44,7 +44,7 @@ class Coc(commands.Cog):
 		self.emoji_regex = open('emoji_regex.txt', 'r').read()
 
 		#coc api token
-		self.coc_token = os.environ.get("COC")
+		self.coc_token = bot.config.get("my-config", "COC")
 
 		self.headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {0}'.format(self.coc_token)}
 
