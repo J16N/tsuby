@@ -45,7 +45,7 @@ async def run():
 
 	bot = commands.Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
 
-	bot.pool = await asyncpg.create_pool(host='localhost', database='tsuby', user='postgres', password='Jishan 007')
+	bot.pool = await asyncpg.create_pool(host='localhost', database='tsuby', user='postgres', password=password)
 
 	for cog in cogs:
 		bot.load_extension(cog)
