@@ -1,0 +1,7 @@
+[my-config]
+TOKEN=
+COC=
+host=
+database=
+user=
+password=
