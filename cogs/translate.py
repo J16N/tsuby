@@ -928,9 +928,9 @@ class Translate(commands.Cog):
 			con = await self.bot.pool.acquire()
 
 			try:
-				channel_not_block = await con.fetchrow(check_channel_block)
+				channel_block = await con.fetchrow(check_channel_block)
 
-				if not channel_not_block:
+				if not channel_block:
 					user = await con.fetchrow(check_channel_user)
 
 					if not user:
@@ -1082,9 +1082,9 @@ class Translate(commands.Cog):
 			con = await self.bot.pool.acquire()
 
 			try:
-				channel_not_block = await con.fetchrow(check_channel_block)
+				channel_block = await con.fetchrow(check_channel_block)
 
-				if not channel_not_block:
+				if not channel_block:
 					user = await con.fetchrow(check_channel_user)
 
 					if not user:
