@@ -376,9 +376,9 @@ class Translate(commands.Cog):
 			
 
 		if removed_user:
-			await ctx.send(f"{', '.join(removed_user)}, you will no longer be auto translated.")
+			await ctx.send(f"{', '.join(removed_user)}, *you will no longer be auto translated.*")
 		else:
-			await ctx.send("I do not see any user to remove from the translation table. The user(s) may already been removed.", delete_after=3.0)
+			await ctx.send("I don't see any user to remove from the translation table. The user(s) may already been removed.", delete_after=3.0)
 
 
 
@@ -423,7 +423,7 @@ class Translate(commands.Cog):
 					try:
 						await con.execute(update_user)
 
-						await ctx.send(f"{ctx.author.mention}, your automatic translation has successfully been updated.", delete_after=3.0)
+						await ctx.send(f"{ctx.author.mention}, *your automatic translation has successfully been updated.*", delete_after=3.0)
 
 					finally:
 						await self.bot.pool.release(con)
@@ -438,7 +438,7 @@ class Translate(commands.Cog):
 				try:
 					await con.execute(ins_user)
 
-					await ctx.send(f"{ctx.author.mention}, your automatic translation to `{to}` has successfully been enabled.", delete_after=3.0)
+					await ctx.send(f"{ctx.author.mention}, *your automatic translation to* `{to}` *has successfully been enabled.*", delete_after=3.0)
 				
 				finally:
 					await self.bot.pool.release(con)
@@ -471,7 +471,7 @@ class Translate(commands.Cog):
 			try:
 				await con.execute(del_user)
 
-				await ctx.send(f"{ctx.author.mention}, you will no longer be auto translated.", delete_after=3.0)
+				await ctx.send(f"{ctx.author.mention}, *you will no longer be auto translated.*", delete_after=3.0)
 
 			finally:
 					await self.bot.pool.release(con)
@@ -588,7 +588,7 @@ class Translate(commands.Cog):
 			
 
 		if removed_user:
-			await ctx.send(f"{', '.join(removed_user)}, you will no longer be auto translated here.")
+			await ctx.send(f"{', '.join(removed_user)}, **you will no longer be auto translated here.**")
 		else:
 			await ctx.send("I do not see any user to remove from the translation table. The user(s) may already been removed.", delete_after=3.0)
 
@@ -625,7 +625,7 @@ class Translate(commands.Cog):
 			if user_data:
 
 				if user_data['translate_from'] == frm and user_data['translate_to'] == to:
-					await ctx.send(f"{ctx.author.mention}, your automatic translation here is already enabled", delete_after=3.0)
+					await ctx.send(f"{ctx.author.mention}, your automatic translation here is already enabled.", delete_after=3.0)
 
 
 				else:
@@ -634,7 +634,7 @@ class Translate(commands.Cog):
 
 					try:
 						await con.execute(update_user)
-						await ctx.send(f"{ctx.author.mention}, your automatic translation here has successfully been updated.", delete_after=3.0)
+						await ctx.send(f"{ctx.author.mention}, *your automatic translation here has successfully been updated.*", delete_after=3.0)
 
 
 					finally:
@@ -648,7 +648,7 @@ class Translate(commands.Cog):
 
 				try:
 					await con.execute(ins_user)
-					await ctx.send(f"{ctx.author.mention}, your automatic translation to `{to}` has successfully been enabled for this channel.", delete_after=3.0)
+					await ctx.send(f"{ctx.author.mention}, *your automatic translation to* `{to}` *has successfully been enabled for this channel.*", delete_after=3.0)
 				
 				
 				finally:
@@ -679,7 +679,7 @@ class Translate(commands.Cog):
 
 			try:
 				await con.execute(del_user)
-				await ctx.send(f"{ctx.author.mention}, you will no longer be auto translated here.", delete_after=3.0)
+				await ctx.send(f"{ctx.author.mention}, *you will no longer be auto translated here.*", delete_after=3.0)
 
 
 			finally:
@@ -733,7 +733,7 @@ class Translate(commands.Cog):
 					ignore_file.write("%s\n" % item)
 
 
-			await ctx.send(f"*Any message starting with *\'{', '.join(keyword)}\'* will not be translated.*")
+			await ctx.send(f"*Any message starting with* {', '.join(keyword)} *will not be translated.*")
 
 
 
@@ -773,9 +773,7 @@ class Translate(commands.Cog):
 						duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
 						AND ch_id = '{}' AND ch_block = 'N'".format(ctx.author.id, ch_id)
 
-						ch_data = await con.execute(duplicate_ch)
-
-						if ch_data:
+						if await con.fetchrow(duplicate_ch):
 							update_ch = "UPDATE translation_table SET ch_block = 'Y' \
 							WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ch_id)
 
@@ -791,18 +789,16 @@ class Translate(commands.Cog):
 
 
 					if updated_channels:
-						await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated in* {', '.join(updated_channels)}")
+						await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated in* {', '.join(updated_channels)}.")
 
 				else:
 					# we will check out if the command is run in translation-enabled channel
 					duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
 					AND ch_id = '{}' AND ch_block = 'N'".format(ctx.author.id, ctx.channel.id)
 
-					ch_data = await con.execute(duplicate_ch)
-
-					if ch_data:
+					if await con.fetchrow(duplicate_ch):
 						update_ch = "UPDATE translation_table SET ch_block = 'Y' \
-						WHERE user_id = '{}' AND ch_id = '{}'".format(to, frm, ctx.author.id, ctx.channel.id)
+						WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
 
 						await con.execute(update_ch)
 
@@ -813,7 +809,7 @@ class Translate(commands.Cog):
 						await con.execute(ins_ch)
 
 
-					await ctx.send(f"{ctx.author.mention}, you will no longer be auto-translated here.")
+					await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated here.*", delete_after=3.0)
 
 			finally:
 				await self.bot.pool.release(con)
@@ -831,7 +827,7 @@ class Translate(commands.Cog):
 	@tr.command()
 	@commands.guild_only()
 	async def unblock(self, ctx, *channels):
-		'''Block auto-translation in given channels'''
+		'''Unblock auto-translation in given channels'''
 		
 		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 			# delete the message command
@@ -854,11 +850,9 @@ class Translate(commands.Cog):
 
 					# we will check out if any translation-enabled channel is provided
 					duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
-					AND ch_id = '{}' AND ch_block = 'Y' AND translate_to IS NOT NONE".format(ctx.author.id, ch_id)
+					AND ch_id = '{}' AND ch_block = 'Y' AND translate_to IS NOT NULL".format(ctx.author.id, ch_id)
 
-					ch_data = await con.execute(duplicate_ch)
-
-					if ch_data:
+					if await con.fetchrow(duplicate_ch):
 						update_ch = "UPDATE translation_table SET ch_block = 'N' \
 						WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ch_id)
 
@@ -866,24 +860,28 @@ class Translate(commands.Cog):
 						updated_channels.append(ch.mention)
 
 					else:
-						del_ch = "DELETE FROM translation_table WHERE \
-						user_id = '{}' AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ch_id)
+						check_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
+						AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ch_id)
 
-						await con.execute(del_ch)
-						updated_channels.append(ch.mention)
+						if await con.fetchrow(check_ch):
+							del_ch = "DELETE FROM translation_table WHERE \
+							user_id = '{}' AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ch_id)
+
+							await con.execute(del_ch)
+							updated_channels.append(ch.mention)
 
 
 				if updated_channels:
-					await ctx.send(f"{ctx.author.mention}, *you will again be auto-translated in* {', '.join(updated_channels)}")
+					await ctx.send(f"{ctx.author.mention}, *you will again be auto-translated in* {', '.join(updated_channels)}.")
+				else:
+					await ctx.send(f"Auto-translation isn't blocked in any channels.", delete_after=3.0)
 
 			else:
 				# we will check out if the command is run in translation-disabled channel
 				duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
-				AND ch_id = '{}' AND ch_block = 'Y' AND translate_to IS NOT NONE".format(ctx.author.id, ctx.channel.id)
+				AND ch_id = '{}' AND ch_block = 'Y' AND translate_to IS NOT NULL".format(ctx.author.id, ctx.channel.id)
 
-				ch_data = await con.execute(duplicate_ch)
-
-				if ch_data:
+				if await con.fetchrow(duplicate_ch):
 					update_ch = "UPDATE translation_table SET ch_block = 'N' \
 					WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
 
@@ -897,7 +895,7 @@ class Translate(commands.Cog):
 					await con.execute(del_ch)
 
 
-				await ctx.send(f"{ctx.author.mention}, you will again be auto-translated here.")
+				await ctx.send(f"{ctx.author.mention}, *you will again be auto-translated here.*", delete_after=3.0)
 
 		finally:
 			await self.bot.pool.release(con)
