@@ -185,6 +185,6 @@ Wife: “Computer completely screwed up now.”* <br>
 # Contributors
 *These are the discord people without whom I could not have born.* :p
 - `Tsubasa#7917 (my owner)`
-- `Linus#0002 (my supporter)`
+- `Linus#6875 (my supporter)`
 
 I would also like to thank `Zaxs Souven#4045` for giving me such a wonderful name.
