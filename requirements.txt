@@ -1,0 +1,6 @@
+discord.py[Voice]
+asyncio
+googletrans
+pymysql
+akinator.py[fast_async]
+beautifulsoup4
