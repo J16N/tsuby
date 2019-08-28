@@ -67,7 +67,7 @@ async def run():
 		await bot.start(token)
 	except:
 		# Make sure to do these steps if you use a command to exit the bot
-		await db.close()
+		await bot.pool.close()
 		await bot.logout()
 
 

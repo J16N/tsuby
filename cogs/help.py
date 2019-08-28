@@ -50,7 +50,7 @@ class Help(commands.Cog):
 		embed.add_field(name="**t-nitromojis**", value="`└─ Lists all my nitromojis.`", inline=False)
 		embed.add_field(name="**t-ne [<nitromoji>, <nitromoji> ... <nitromoji>]**", value="`└─ Sends all the list of nitromojis. The alias of this command is 't-nitro'`", inline=False)
 		embed.add_field(name="**t-ping**", value="`└─ Ping me.`", inline=False)
-		embed.add_field(name="**t-react [<emoji>, <emoji> ... <nitromoji>]**", value="`└─ Reacts to the last message of any user with the following list of emojis.` \n\n**─── Main Commands ───**", inline=False)
+		embed.add_field(name="**t-react <message> [<emoji>, <emoji> ... <nitromoji>]**", value="`└─ Reacts to the given message of any user with the following list of emojis. \nThe <message> can be message 'ID', 'link' or 'channel ID-message ID' (Retrieve by shift-clicking 'copy ID').\nYou can also make me react to the last message by passing 0, second last message for 1 and so on.` \n\n**─── Main Commands ───**", inline=False)
 		
 		embed.add_field(name="**t-9gag help**", value="`└─ 1 command. All my available memes related commands.`", inline=False)
 		embed.add_field(name="**t-coc help**", value="`└─ 2 commands. All my Clash Of Clans related commands.`", inline=False)

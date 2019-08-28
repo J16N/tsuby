@@ -100,7 +100,7 @@ class Utils(commands.Cog):
 
 	
 
-	@commands.command()
+	@commands.command(name='nitromojis', aliases=['nitroemojis'])
 	@commands.cooldown(10,600,type=BucketType.member)
 	async def nitromojis(self, ctx):
 		'''Lists all the nitromojis'''
@@ -148,7 +148,7 @@ class Utils(commands.Cog):
 		embed.add_field(name='\u200b', value = emoji_help4, inline=True)
 		embed.add_field(name='\u200b', value = emoji_help5, inline=True)
 		embed.add_field(name='\u200b', value = emoji_help6, inline=True)
-		embed.set_footer(text="The prefix of every nitromoji is 't'.", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
+		embed.set_footer(text="The prefix of every nitromojis is 't'.", icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 		
 		await ctx.send(embed=embed, delete_after=120.0)
 
@@ -159,7 +159,7 @@ class Utils(commands.Cog):
 
 	
 
-	@commands.command(name="ne", aliases=['nitro'])
+	@commands.command(name="ne", aliases=['nitro', 'nitroemoji', 'nitromoji'])
 	@commands.cooldown(10,600,type=BucketType.member)
 	async def nitromoji(self, ctx, *names):
 		'''Send the nitromoji'''
@@ -173,39 +173,55 @@ class Utils(commands.Cog):
 				await ctx.message.delete()
 
 			# make all the names lowercase
-			names = [name.lower().replace(":", "") for name in names]
+			#names = [name.lower().replace(":", "") for name in names]
 			
 			# list of names of custom animated emojis
-			emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
-				[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
-				[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
+			#emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
+				#[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
+				#[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
 
 			# here I could have used set intersection but I didn't because that won't work for repititive emojis 
-			emoji_names = [name for name in names if name in emoji_list]
+			#emoji_names = [name for name in names if name in emoji_list]
 
-			if emoji_names:
+			#if emoji_names:
 
-				emoji_message = [str(discord.utils.get(self.bot.emojis, name=name)) for name in emoji_names]
+				#emoji_message = [str(discord.utils.get(self.bot.emojis, name=name)) for name in emoji_names]
 
 				# now send the message
-				await ctx.send(''.join(emoji_message))
+				#await ctx.send(''.join(emoji_message))
 
+
+			emojis = []
+
+			for name in names:
+				# literally from here we will going to seperate out all the unicode emojis from custom ones so that bot
+				# can send both
+
+				unicode_emoji = re.search(self.react_regex, name)
+
+				if not unicode_emoji:
+					try:
+						emoji = await commands.EmojiConverter().convert(ctx, name)
+					except:
+						continue
+				else:
+					emoji = name
+
+				emojis.append(str(emoji))
+
+
+			if emojis:
+				await ctx.send(''.join(emojis))
 
 			else:
-				temp = await ctx.send('*The emoji with that name does not exist.* \nType `t-nitromojis` to get the list.')
-				await temp.delete(delay=5.0)
-
-				if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-					# delete the message command
-					await ctx.message.delete(delay=5.0)
+				await ctx.send('*The emoji with that name does not exist.* \nType `t-nitromojis` to get the list.', delete_after=5.0)
 		
 		else:
-			temp = await ctx.send('Type `t-nitromojis` to get the list of nitromojis. \n**Usage: ** `t-ne [<nitromoji> <nitromoji> ... <nitromoji>]`')
-			await temp.delete(delay=15.0)
+			await ctx.send('Type `t-nitromojis` to get the list of nitromojis. \n**Usage: ** `t-ne [<nitromoji> <nitromoji> ... <nitromoji>]`', delete_after=10.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
-				await ctx.message.delete(delay=15.0)
+				await ctx.message.delete(delay=10.0)
 
 
 
@@ -214,7 +230,7 @@ class Utils(commands.Cog):
 
 	@commands.command()
 	@commands.cooldown(10,600,type=BucketType.member)
-	async def react(self, ctx, *reactions):
+	async def react(self, ctx, number, *reactions):
 		'''Reacts to the last message'''
 
 		if reactions:
@@ -223,42 +239,81 @@ class Utils(commands.Cog):
 				# delete the message command
 				await ctx.message.delete()
 
-			message = await ctx.message.channel.history(limit=1, before=ctx.message).flatten()
-			react = re.findall(self.react_regex, ' '.join(reactions))
-			reactions = set(reactions) - set(react)
+			try:
+				message = await commands.MessageConverter().convert(ctx, number)
+			except:
+				message = None
+				try:
+					number = int(number)
+					message_list = await ctx.message.channel.history(limit=number+1, before=ctx.message).flatten()
+				except:
+					await ctx.send("*I don't see any message to react in this channel.*", delete_after=3.0)
 
-			if reactions: # here the bot will react with custom emotes
+			#react = re.findall(self.react_regex, ' '.join(reactions))
+			#reactions = set(reactions) - set(react)
 
-				emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
-					[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
-					[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
-				reactions = list(reactions.intersection(reactions)) #removing duplicates
-				emoji_names = [name.replace(":", "") for name in reactions if name.replace(":", "") in emoji_list]
-				react = react + [discord.utils.get(self.bot.emojis, name=name) for name in emoji_names]
+			#if reactions: # here the bot will react with custom emotes
 
-				for reaction in react:
-					await message[0].add_reaction(reaction)
+				#emoji_list = [emoji.name for emoji in self.bot.get_guild(372348786917507074).emojis if emoji.animated] + \
+					#[emoji.name for emoji in self.bot.get_guild(611086977457979403).emojis if emoji.animated] + \
+					#[emoji.name for emoji in self.bot.get_guild(576442836157857792).emojis if emoji.animated]
+				#reactions = list(reactions.intersection(reactions)) #removing duplicates
+				#emoji_names = [name.replace(":", "") for name in reactions if name.replace(":", "") in emoji_list]
+				#react = react + [discord.utils.get(self.bot.emojis, name=name) for name in emoji_names]
 
-			else:
+				#for reaction in react:
+					#await message[0].add_reaction(reaction)
+
+			#else:
 				
-				for reaction in react:
-					await message[0].add_reaction(reaction)
+				#for reaction in react:
+					#await message[0].add_reaction(reaction)
+
+
+			reactions = list(set(reactions) & set(reactions))
+			react = []
+
+			for reaction in reactions:
+
+				unicode_emoji = re.search(self.react_regex, reaction)
+
+				if not unicode_emoji:
+					try:
+						emoji = await commands.EmojiConverter().convert(ctx, reaction)
+					except:
+						continue
+				else:
+					emoji = reaction
+
+				
+				react.append(str(emoji))
+
+			
+			for reaction in react:
+				if not message:
+					await message_list[number].add_reaction(reaction)
+				else:
+					await message.add_reaction(reaction)
+
 
 		else:
-			temp = await ctx.send('`t-react [<emoji> <emoji> ... <name of any nitromoji> <name of any nitromoji>]`')
-
-			await temp.delete(delay=15.0)
+			await ctx.send('`t-react [<emoji> <emoji> ... <nitromoji> <nitromoji>]`', delete_after=10.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
-				await ctx.message.delete(delay=15.0)
+				await ctx.message.delete(delay=10.0)
+
+
+
+	
+
 
 
 
 	@commands.command()
 	@commands.cooldown(10,600,type=BucketType.member)
 	@commands.guild_only()
-	async def feedback(self, ctx, *message):
+	async def feedback(self, ctx, *, message=None):
 		'''Sends feedback to the developer'''
 		
 		if message:
@@ -275,7 +330,7 @@ class Utils(commands.Cog):
 
 			channel = self.bot.get_channel(586473048841125889)
 
-			message = f"*{date_time}*\n\n"+" ".join(message)
+			message = f"*{date_time}*\n\n"+message
 
 			embed = discord.Embed(color=0x9BD362)
 			embed.set_author(name=ctx.author.name+"#"+ctx.author.discriminator, icon_url=ctx.author.avatar_url)
@@ -294,13 +349,16 @@ class Utils(commands.Cog):
 			feedback_file.close()
 
 		else:
-			temp = await ctx.send("`t-feedback <feedback_message>`")
-
-			await temp.delete(delay=5.0)
+			await ctx.send("`t-feedback <feedback_message>`", delete_after=5.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
 				await ctx.message.delete(delay=5.0)
+
+
+	
+
+
 
 
 	@commands.command()
@@ -310,6 +368,11 @@ class Utils(commands.Cog):
 
 		url = "https://discordapp.com/api/oauth2/authorize?client_id=554689083289632781&permissions=8&scope=bot"
 		await ctx.send(f"*Invite me using this url*\n{url}")
+
+
+	
+
+
 
 
 	@commands.command()
@@ -352,10 +415,6 @@ class Utils(commands.Cog):
 	async def clear(self, ctx, number=None, mention=None):
 		'''Clears the given number of messages'''
 
-		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
-			# delete the message command
-			await ctx.message.delete(delay=5.0)
-
 		try:
 			number = int(number)
 
@@ -375,18 +434,28 @@ class Utils(commands.Cog):
 				await ctx.message.channel.purge(limit=number, check=check_user)
 
 		except:
-			temp = await ctx.send("`t-clear <total_messages_to_search_through>(int) <mentioned_users>(optional)`")
+			ctx.send("`t-clear <total_messages_to_search_through>(int) <mentioned_users>(optional)`", delete_after=5.0)
 
-			await temp.delete(delay=5.0)
+			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+				# delete the message command
+				await ctx.message.delete(delay=5.0)
 
 
 
-	def bot_owner(ctx):
-		return ctx.message.author.id == 302467968095223820 
+	
+
+
+
+	def owner():	
+		def bot_owner(ctx):
+			return ctx.message.author.id == 302467968095223820 
+
+		return commands.check(bot_owner)
 
 
 	@commands.command()
-	async def announce(self, ctx, message):
+	@owner()
+	async def announce(self, ctx, *, message):
 		'''Announce new features to all the servers'''
 
 		for guild in self.bot.guilds:

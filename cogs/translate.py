@@ -172,86 +172,98 @@ class Translate(commands.Cog):
 
 
 	@tr.command()
-	async def to(self, ctx, to, frm, *, message):
+	async def to(self, ctx, to, frm, *, message=None):
 		'''Translate the message'''
 
-		links = ' '
-		emojis = ' '
+		if message:
 
-		'''
-		Verify if the message any kind of mentions only.
-		If it does, ignore translating it.
-		'''
+			links = ' '
+			emojis = ' '
 
-		if set(message.split()) == set(re.findall(r"(<[@|#]!?&? ?\d+>|@everyone|@here)", message)):
-			return
+			'''
+			Verify if the message any kind of mentions only.
+			If it does, ignore translating it.
+			'''
 
-		
-		'''
-		Okay so we also don't want to translate those messages that contain only numbers.
-		1) We removed mentions (if any) from the message.
-		2) Verifying if the message.content is a number. If it is, then we won't translate.
-		'''
-		temp = re.sub("<[@|#]!?&? ?\d+>", '', message)
-		if set(temp.split()) == set(re.findall(r"\b\d+\b", temp)):
-			return
+			if set(message.split()) == set(re.findall(r"(<[@|#]!?&? ?\d+>|@everyone|@here)", message)):
+				return
+
+			
+			'''
+			Okay so we also don't want to translate those messages that contain only numbers.
+			1) We removed mentions (if any) from the message.
+			2) Verifying if the message.content is a number. If it is, then we won't translate.
+			'''
+			temp = re.sub("<[@|#]!?&? ?\d+>", '', message)
+			if set(temp.split()) == set(re.findall(r"\b\d+\b", temp)):
+				return
 
 
-		'''
-		Alright so again some kind of restrictions before translating the message like if user share any
-		urls ignore, or any bot commands, or any emojis etc etc.
-		'''
-		if message == links.join(re.findall("(?P<url>https?://[^\s]+)", message)) or \
-		message == emojis.join(re.findall(self.emoji_regex, message)):
-			return
+			'''
+			Alright so again some kind of restrictions before translating the message like if user share any
+			urls ignore, or any bot commands, or any emojis etc etc.
+			'''
+			if message == links.join(re.findall("(?P<url>https?://[^\s]+)", message)) or \
+			message == emojis.join(re.findall(self.emoji_regex, message)):
+				return
 
-		# saving our new old message :-3
-		old_message_content = message
+			# saving our new old message :-3
+			old_message_content = message
 
-		# okay we don't want any markdowns. So let's remove them
-		old_message_content = old_message_content.replace('*', '')
-		old_message_content = old_message_content.strip(' ')
-		old_message_content = re.sub(' +', ' ', old_message_content) #removes extra space
+			# okay we don't want any markdowns. So let's remove them
+			old_message_content = old_message_content.replace('*', '')
+			old_message_content = old_message_content.strip(' ')
+			old_message_content = re.sub(' +', ' ', old_message_content) #removes extra space
 
-		# stripping off the emojis
-		message = message.translate(message.maketrans('', '', ''.join(re.findall(self.emoji_regex, message))))
-		message = message.replace('*', '')
-		message = re.sub(' +', ' ', message)
+			# stripping off the emojis
+			message = message.translate(message.maketrans('', '', ''.join(re.findall(self.emoji_regex, message))))
+			message = message.replace('*', '')
+			message = re.sub(' +', ' ', message)
 
-		# with more confidence means perfect translation xD
-		language_confidence = await self.translator.detect(message)
-		if language_confidence.confidence < 0.9:
-			src = frm
+			# with more confidence means perfect translation xD
+			language_confidence = await self.translator.detect(message)
+			if language_confidence.confidence < 0.9:
+				src = frm
+			else:
+				src = language_confidence.lang
+
+			# to_lang
+			dest = to
+
+			if src != dest:
+				# lets just send typing status to the user while the bot do some of his important tasks in background 
+				await ctx.message.channel.trigger_typing()
+
+				translated_message = await self.translator.translate(message, dest = dest, src = src)
+
+				# here I found that few things get changed after translating the message
+				# so I just replace them with their original formats
+				if "<@ " in translated_message.text or "<@! " in translated_message.text:
+					translated_message.text = translated_message.text.replace("<@ ", "<@")
+					translated_message.text = translated_message.text.replace("<@! ", "<@")
+
+				if "<# " in translated_message.text or "<@! " in translated_message.text:
+					translated_message.text = translated_message.text.replace("<# ", "<#")
+
+				# Discord embeds, no big deal xD
+				embed = discord.Embed(description = '*'+old_message_content+'*', color=0xC0C0C0)
+				embed.set_author(name=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+				embed.add_field(name="**Translated**", value = translated_message.text, inline=True)
+				embed.set_footer(text=u"{} ({}) → {} ({})".format(LANGUAGES[src].capitalize(), \
+					src, LANGUAGES[dest].capitalize(), dest), icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
+
+				await ctx.message.channel.send(embed=embed)
+
 		else:
-			src = language_confidence.lang
+			await ctx.send("`t-tr <to> <frm> <your_message>`", delete_after=5.0)
 
-		# to_lang
-		dest = to
+			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+				# delete the message command
+				await ctx.message.delete(delay=5.0)
 
-		if src != dest:
-			# lets just send typing status to the user while the bot do some of his important tasks in background 
-			await ctx.message.channel.trigger_typing()
 
-			translated_message = await self.translator.translate(message, dest = dest, src = src)
 
-			# here I found that few things get changed after translating the message
-			# so I just replace them with their original formats
-			if "<@ " in translated_message.text or "<@! " in translated_message.text:
-				translated_message.text = translated_message.text.replace("<@ ", "<@")
-				translated_message.text = translated_message.text.replace("<@! ", "<@")
-
-			if "<# " in translated_message.text or "<@! " in translated_message.text:
-				translated_message.text = translated_message.text.replace("<# ", "<#")
-
-			# Discord embeds, no big deal xD
-			embed = discord.Embed(description = '*'+old_message_content+'*', color=0xC0C0C0)
-			embed.set_author(name=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-			embed.add_field(name="**Translated**", value = translated_message.text, inline=True)
-			embed.set_footer(text=u"{} ({}) → {} ({})".format(LANGUAGES[src].capitalize(), \
-				src, LANGUAGES[dest].capitalize(), dest), icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
-
-			await ctx.message.channel.send(embed=embed)
-
+	
 
 
 	# verify if the user is the server mod or the bot creator
