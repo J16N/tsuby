@@ -453,6 +453,9 @@ class Utils(commands.Cog):
 		return commands.check(bot_owner)
 
 
+	
+
+
 	@commands.command()
 	@owner()
 	async def announce(self, ctx, *, message):
