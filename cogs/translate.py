@@ -781,7 +781,7 @@ class Translate(commands.Cog):
 
 						ch_id = ch.id
 
-						# we will check out if any translation-enabled channel is provided
+						# we will check out if any translation-disabled channel is provided
 						duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
 						AND ch_id = '{}' AND ch_block = 'N'".format(ctx.author.id, ch_id)
 
@@ -793,35 +793,46 @@ class Translate(commands.Cog):
 							updated_channels.append(ch.mention)
 
 						else:
-							ins_ch = "INSERT INTO translation_table (user_id, ser_id, ch_id, ch_block) \
-							VALUES ('{}', '{}', '{}', 'Y')".format(ctx.author.id, ctx.guild.id, ch_id)
+							check_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
+							AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ch_id)
 
-							await con.execute(ins_ch)
-							updated_channels.append(ch.mention)
+							if not await con.fetchrow(check_ch):
+								ins_ch = "INSERT INTO translation_table (user_id, ser_id, ch_id, ch_block) \
+								VALUES ('{}', '{}', '{}', 'Y')".format(ctx.author.id, ctx.guild.id, ch_id)
+
+								await con.execute(ins_ch)
+								updated_channels.append(ch.mention)
 
 
 					if updated_channels:
 						await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated in* {', '.join(updated_channels)}.")
 
 				else:
-					# we will check out if the command is run in translation-enabled channel
-					duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
-					AND ch_id = '{}' AND ch_block = 'N'".format(ctx.author.id, ctx.channel.id)
+					# we will check out if the command is run in translation-disabled channel
+					ch_disabled = "SELECT * FROM translation_table WHERE user_id = '{}' \
+					AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ctx.channel.id)
 
-					if await con.fetchrow(duplicate_ch):
-						update_ch = "UPDATE translation_table SET ch_block = 'Y' \
-						WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
+					if not await con.fetchrow(ch_disabled):
+						tr_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
+						AND ch_id = '{}' AND ch_block = 'N'".format(ctx.author.id, ctx.channel.id)
 
-						await con.execute(update_ch)
+						if await con.fetchrow(tr_ch):
+							update_ch = "UPDATE translation_table SET ch_block = 'Y' \
+							WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
+
+							await con.execute(update_ch)
+
+						else:
+							ins_ch = "INSERT INTO translation_table (user_id, ser_id, ch_id, ch_block) \
+							VALUES ('{}', '{}', '{}', 'Y')".format(ctx.author.id, ctx.guild.id, ctx.channel.id)
+
+							await con.execute(ins_ch)
+
+
+						await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated here.*", delete_after=3.0)
 
 					else:
-						ins_ch = "INSERT INTO translation_table (user_id, ser_id, ch_id, ch_block) \
-						VALUES ('{}', '{}', '{}', 'Y')".format(ctx.author.id, ctx.guild.id, ctx.channel.id)
-
-						await con.execute(ins_ch)
-
-
-					await ctx.send(f"{ctx.author.mention}, *you will no longer be auto-translated here.*", delete_after=3.0)
+						await ctx.send("*Auto-translation is already blocked in this channel.*", delete_after=3.0)
 
 			finally:
 				await self.bot.pool.release(con)
@@ -889,25 +900,125 @@ class Translate(commands.Cog):
 					await ctx.send(f"Auto-translation isn't blocked in any channels.", delete_after=3.0)
 
 			else:
-				# we will check out if the command is run in translation-disabled channel
-				duplicate_ch = "SELECT * FROM translation_table WHERE user_id = '{}' \
-				AND ch_id = '{}' AND ch_block = 'Y' AND translate_to IS NOT NULL".format(ctx.author.id, ctx.channel.id)
+				# we will check out if the command is run in translation-enabled channel
+				ch_enabled = "SELECT * FROM translation_table WHERE user_id = '{}' \
+				AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ctx.channel.id)
 
-				if await con.fetchrow(duplicate_ch):
-					update_ch = "UPDATE translation_table SET ch_block = 'N' \
-					WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
+				if await con.fetchrow(ch_enabled):
+					# now we're gonna update or delete channels accordingly	
+					tr_ch = "SELECT * FROM translation_table WHERE user_id = '{}' AND ch_id = '{}' AND \
+					ch_block = 'Y' AND translate_to IS NOT NULL".format(ctx.author.id, ctx.channel.id)
 
-					await con.execute(update_ch)
-					updated_channels.append(ch.mention)
+					if await con.fetchrow(tr_ch):
+						update_ch = "UPDATE translation_table SET ch_block = 'N' WHERE user_id = '{}' AND \
+						ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
+
+						await con.execute(update_ch)
+
+					else:
+						del_ch = "DELETE FROM translation_table WHERE user_id = '{}' AND ch_id = '{}' AND \
+						ch_block = 'Y'".format(ctx.author.id, ctx.channel.id)
+
+						await con.execute(del_ch)
+
+
+					await ctx.send(f"{ctx.author.mention}, *you will again be auto-translated here.*", delete_after=3.0)
 
 				else:
-					del_ch = "DELETE FROM translation_table WHERE \
-					user_id = '{}' AND ch_id = '{}' AND ch_block = 'Y'".format(ctx.author.id, ctx.channel.id)
+					await ctx.send("*Auto-translation isn't blocked in this channel.*", delete_after=3.0)
 
-					await con.execute(del_ch)
+		finally:
+			await self.bot.pool.release(con)
 
 
-				await ctx.send(f"{ctx.author.mention}, *you will again be auto-translated here.*", delete_after=3.0)
+
+
+	@tr.command()
+	@commands.guild_only()
+	async def status(self, ctx, member=None):
+		'''Displays the user's translation status'''
+
+		await ctx.message.channel.trigger_typing()
+
+		con = await self.bot.pool.acquire()
+
+		if member:
+			try:
+				member = await commands.MemberConverter().convert(ctx, member)
+				text = f"{member.display_name}'s auto-translation summary for this server."
+			except:
+				member = ctx.author
+				text = "Your auto-translation summary for this server."
+
+		else:
+			member = ctx.author
+			text = "Your auto-translation summary for this server."
+
+		embed = discord.Embed(color=0xC0C0C0)
+		embed.set_thumbnail(url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/translate.png")
+		embed.set_footer(text=text, \
+			icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
+
+		try:
+			user_ch_tr = "SELECT * FROM translation_table WHERE user_id = '{}' AND ser_id = '{}' AND \
+				ch_id != 0 AND translate_to IS NOT NULL".format(member.id, ctx.guild.id)
+
+			ch_tr = await con.fetch(user_ch_tr)
+
+			if ch_tr:
+				value = "***Enabled***\n\n"
+
+				for record in ch_tr:
+					frm, to = record['translate_from'], record['translate_to']
+					channel = await commands.TextChannelConverter().convert(ctx, str(record['ch_id']))
+
+					value += f"{channel.mention} {LANGUAGES[frm].capitalize()} (`{frm}`) \
+						➞ {LANGUAGES[to].capitalize()} (`{to}`)\n"
+
+			else:
+				value = "*Disabled*"
+
+			
+			embed.add_field(name="**Channel-translation**", value=value, inline=False)
+
+
+			
+			ch_bl = "SELECT * FROM translation_table WHERE \
+			user_id = '{}' AND ser_id = '{}' AND ch_block = 'Y'".format(member.id, ctx.guild.id)
+
+			ch_bl = await con.fetch(ch_bl)
+
+			if ch_bl:
+				value = ""
+
+				for record in ch_bl:
+					channel = await commands.TextChannelConverter().convert(ctx, str(record['ch_id']))
+
+					value += f"{channel.mention} \u200B \u200B \u200B"
+
+			else:
+				value = "*None*"
+
+
+			embed.add_field(name="**Blocked Channels**", value=value, inline=False)
+			
+
+			user_auto_tr = "SELECT * FROM translation_table WHERE \
+			user_id = '{}' AND ser_id = '{}' AND ch_id = 0".format(member.id, ctx.guild.id)
+
+			auto_tr = await con.fetchrow(user_auto_tr)
+			if auto_tr:
+				frm, to = auto_tr['translate_from'], auto_tr['translate_to']
+				value = f"***Enabled*** \u200B \u200B \u200B \u200B[{LANGUAGES[frm].capitalize()} \
+					(`{frm}`) ➞ {LANGUAGES[to].capitalize()} (`{to}`)]"
+
+			else:
+				value = "*Disabled*"
+
+			embed.add_field(name="**Server-Translation**", value=value, inline=False)
+
+
+			await ctx.send(embed=embed)
 
 		finally:
 			await self.bot.pool.release(con)

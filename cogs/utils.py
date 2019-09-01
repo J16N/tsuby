@@ -87,8 +87,7 @@ class Utils(commands.Cog):
 		'''Pings the bot'''
 		
 		if ctx.message.guild is not None:
-			ping = await ctx.send(f"{ctx.author.mention}, ***PONG!*** (~{round(self.bot.latency*1000)}ms)")
-			await ping.delete(delay=3.0)
+			await ctx.send(f"{ctx.author.mention}, ***PONG!*** (~{round(self.bot.latency*1000)}ms)", delete_after=3.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
