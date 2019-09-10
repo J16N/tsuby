@@ -34,6 +34,7 @@ import re
 import os
 from datetime import datetime
 import pytz
+from check import admin
 
 start_time = datetime.utcnow() # Timestamp of when Tsuby comes online
 
@@ -296,7 +297,7 @@ class Utils(commands.Cog):
 
 
 		else:
-			await ctx.send('`t-react [<emoji> <emoji> ... <nitromoji> <nitromoji>]`', delete_after=10.0)
+			await ctx.send('`t-react <message> [<emoji> <emoji> ... <nitromoji> <nitromoji>]`', delete_after=10.0)
 
 			if ctx.me.permissions_in(ctx.message.channel).manage_messages:
 				# delete the message command
@@ -513,12 +514,40 @@ class Utils(commands.Cog):
 		ctx = await self.bot.get_context(message)
 
 		if not ctx.valid:
-			if message.guild:
-				if message.guild.me.mentioned_in(message):
-					await message.add_reaction('<a:tsparklingheart:594132183669538826>')
-			else:
-				if self.bot.user.mentioned_in(message):
-					await message.add_reaction('<a:tsparklingheart:594132183669538826>')
+			if self.bot.user.mentioned_in(message):
+				await message.add_reaction('<a:tsparklingheart:594132183669538826>')
+
+
+
+
+
+	@commands.command()
+	@commands.cooldown(10,600,type=BucketType.member)
+	@admin()
+	async def leave(self, ctx):
+		'''Removes all the translation setup (if enabled) and leaves the server'''
+
+		message = await ctx.send("Cleaning up...")
+
+		con = await self.bot.pool.acquire()
+
+		check_guild = "SELECT * FROM translation_table WHERE ser_id = '{}'".format(ctx.guild.id)
+
+		if await con.fetchrow(check_guild):
+			del_server = "DELETE FROM translation_table WHERE ser_id = '{}'".format(ctx.guild.id)
+
+			try:
+				await con.execute(del_server)
+
+			finally:
+				await self.bot.pool.release(con)
+
+
+		await message.edit(content="**GOODBYE EVERYONE !!** <a:twave:611083710393221121>")
+		await ctx.guild.leave()
+
+
+
 
 def setup(bot):
 	bot.add_cog(Utils(bot))

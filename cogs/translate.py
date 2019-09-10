@@ -35,6 +35,7 @@ import random
 import re
 import os
 import asyncpg
+from check import has_power
 
 class Translate(commands.Cog):
 
@@ -263,21 +264,6 @@ class Translate(commands.Cog):
 
 
 
-	
-
-
-	# verify if the user is the server mod or the bot creator
-	def has_power():
-		def predicate(ctx):
-			if ctx.author.id == 302467968095223820 or ctx.author.permissions_in(ctx.message.channel).manage_messages:
-				return True
-			else:
-				return False
-		
-		return commands.check(predicate)
-
-
-
 
 
 	@auto.command(name="for")
@@ -352,7 +338,7 @@ class Translate(commands.Cog):
 
 	@auto.command(name="remove")
 	@commands.guild_only()
-	@has_power() # command only for server admins and bot creators
+	@has_power() # only for server admins and bot creator
 	async def aremove(self, ctx, *args):
 		'''Removes user from translation table.'''
 
@@ -382,6 +368,19 @@ class Translate(commands.Cog):
 
 					await con.execute(del_user)
 					removed_user.append(member.mention)
+
+				# now we are also going to remove all the channels blocked by the user and
+				# where channel translation not enabled
+				check_ch = "SELECT * FROM translation_table WHERE user_id = '{}' AND \
+				translate_to IS NULL AND ch_block = 'Y'".format(user_id)
+
+				if await con.fetchrow(check_ch):
+					del_ch = "DELETE FROM translation_table WHERE user_id = '{}' AND \
+						translate_to IS NULL AND ch_block = 'Y'".format(user_id)
+
+					await con.execute(del_ch)
+
+
 		
 		finally:
 			await self.bot.pool.release(con)
@@ -461,6 +460,9 @@ class Translate(commands.Cog):
 
 
 
+	
+
+
 	@auto.command(name="off")
 	@commands.guild_only()
 	async def auto_off(self, ctx):
@@ -475,23 +477,41 @@ class Translate(commands.Cog):
 		check_user = "SELECT * FROM translation_table WHERE user_id = '{}' \
 		AND ser_id = '{}' AND ch_id=0".format(ctx.author.id, ctx.guild.id)
 
-		if await con.fetchrow(check_user):
+		try:
+			if await con.fetchrow(check_user):
 
-			del_user = "DELETE FROM translation_table WHERE user_id = '{}' AND \
-			ser_id = '{}' AND ch_id=0".format(ctx.author.id, ctx.guild.id)
+				# delete user from translation table
+				del_user = "DELETE FROM translation_table WHERE user_id = '{}' AND \
+				ser_id = '{}' AND ch_id=0".format(ctx.author.id, ctx.guild.id)
 
-			try:
 				await con.execute(del_user)
+
+				# now we are also going to remove all the channels blocked by the user and
+				# where channel translation not enabled
+				check_ch = "SELECT * FROM translation_table WHERE user_id = '{}' AND \
+					translate_to IS NULL AND ch_block = 'Y'".format(ctx.author.id)
+
+				if await con.fetchrow(check_ch):
+					del_ch = "DELETE FROM translation_table WHERE user_id = '{}' AND \
+						translate_to IS NULL AND ch_block = 'Y'".format(ctx.author.id)
+
+					await con.execute(del_ch)
+
 
 				await ctx.send(f"{ctx.author.mention}, *you will no longer be auto translated.*", delete_after=3.0)
 
-			finally:
-					await self.bot.pool.release(con)
+			
 
-		else:
-			await ctx.send(f"{ctx.author.mention}, your server-wide auto-translation is already disabled. Try `t-tr auto <dest.> <src>` to enable it.", delete_after=3.0)
+			else:
+				await ctx.send(f"{ctx.author.mention}, your server-wide auto-translation is already disabled. Try `t-tr auto <dest.> <src>` to enable it.", delete_after=3.0)
+
+		finally:
+			await self.bot.pool.release(con)
 
 
+
+
+	
 
 
 	@ch.command(name="for")
@@ -526,23 +546,40 @@ class Translate(commands.Cog):
 					AND ch_id = '{}'".format(user_id, ctx.channel.id)
 
 					user_data = await con.fetchrow(check_user)
+
+					check_server_user = "SELECT * FROM translation_table WHERE user_id = '{}' AND ser_id = '{}' \
+						AND ch_id = '0'".format(user_id, ctx.guild.id)
+
+					# let's just check if the user has also enabled server-wide translation
+					ser_data = await con.fetchrow(check_server_user)
 					
-					if not user_data:
 						
-						ins_user = "INSERT INTO translation_table (user_id, ser_id, ch_id, translate_to, translate_from) VALUES ('{}', '{}', '{}', '{}', '{}')".format(user_id, ctx.guild.id, ctx.channel.id, to, frm)
+					# check if the channels translation settings is same as server-wide translation settings
+					if ser_data and ser_data['translate_from'] == frm and ser_data['translate_to'] == to:
+						continue
 
-						await con.execute(ins_user)
-						updated_user.append(member.mention)
-
+					
 					else:
-						#update the translation system for the given users
-						if user_data['translate_from'] != frm or user_data['translate_to'] != to:
+						if not user_data:
 							
-							update_user = "UPDATE translation_table SET translate_to = '{}', translate_from = '{}' WHERE user_id = '{}' AND ch_id = '{}'".format(to, frm, user_id, ctx.channel.id)
+							ins_user = "INSERT INTO translation_table (user_id, ser_id, ch_id, translate_to, translate_from) VALUES ('{}', '{}', '{}', '{}', '{}')".format(user_id, ctx.guild.id, ctx.channel.id, to, frm)
 
-							await con.execute(update_user)
+							await con.execute(ins_user)
 							updated_user.append(member.mention)
 
+						
+						else:
+							#update the translation system for the given users
+							if user_data['translate_from'] != frm or user_data['translate_to'] != to:
+								
+								update_user = "UPDATE translation_table SET translate_to = '{}', \
+								translate_from = '{}', ch_block = 'N' WHERE user_id = '{}' AND \
+								ch_id = '{}'".format(to, frm, user_id, ctx.channel.id)
+
+								await con.execute(update_user)
+								updated_user.append(member.mention)
+
+			
 			
 			finally:
 				await self.bot.pool.release(con)
@@ -560,6 +597,8 @@ class Translate(commands.Cog):
 
 
 
+
+	
 
 	
 
@@ -631,40 +670,54 @@ class Translate(commands.Cog):
 			check_channel_user = "SELECT * FROM translation_table WHERE user_id = '{}' \
 			AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
 
-			# let's just check out if the user is present...
+			# let's just check out if the user is already present...
 			user_data = await con.fetchrow(check_channel_user)
 			
-			if user_data:
+			
+			check_server_user = "SELECT * FROM translation_table WHERE user_id = '{}' AND ser_id = '{}' \
+			AND ch_id = '0'".format(ctx.author.id, ctx.guild.id)
 
-				if user_data['translate_from'] == frm and user_data['translate_to'] == to:
-					await ctx.send(f"{ctx.author.mention}, your automatic translation here is already enabled.", delete_after=3.0)
-
-
-				else:
-					update_user = "UPDATE translation_table SET translate_to = '{}', translate_from = '{}' \
-					WHERE user_id = '{}' AND ch_id = '{}'".format(to, frm, ctx.author.id, ctx.channel.id)
-
-					try:
-						await con.execute(update_user)
-						await ctx.send(f"{ctx.author.mention}, *your automatic translation here has successfully been updated.*", delete_after=3.0)
-
-
-					finally:
-						await self.bot.pool.release(con)
-
+			# let's just check if the user has also enabled server-wide translation
+			ser_data = await con.fetchrow(check_server_user)
 
 			
-			else:
-				ins_user = "INSERT INTO translation_table (user_id, ser_id, ch_id, translate_to, translate_from) VALUES \
-				('{}', '{}', '{}', '{}', '{}')".format(ctx.author.id, ctx.guild.id, ctx.channel.id, to, frm)
+			# check if the channels translation settings is same as server-wide translation settings
+			if ser_data and ser_data['translate_from'] == frm and ser_data['translate_to'] == to:
+				await ctx.send(f"{ctx.author.mention}, your server-wide translation is already enabled with the same condition.", delete_after=3.0)
 
-				try:
-					await con.execute(ins_user)
-					await ctx.send(f"{ctx.author.mention}, *your automatic translation to* `{to}` *has successfully been enabled for this channel.*", delete_after=3.0)
+			else:	
+				if user_data:
+
+					if user_data['translate_from'] == frm and user_data['translate_to'] == to:
+						await ctx.send(f"{ctx.author.mention}, your automatic translation here is already enabled.", delete_after=3.0)
+
+
+
+					else:
+						update_user = "UPDATE translation_table SET translate_to = '{}', translate_from = '{}', \
+						ch_block = 'N' WHERE user_id = '{}' AND ch_id = '{}'".format(to, frm, ctx.author.id, ctx.channel.id)
+
+						try:
+							await con.execute(update_user)
+							await ctx.send(f"{ctx.author.mention}, *your automatic translation here has successfully been updated.*", delete_after=3.0)
+
+
+						finally:
+							await self.bot.pool.release(con)
+
+
 				
-				
-				finally:
-					await self.bot.pool.release(con)
+				else:
+					ins_user = "INSERT INTO translation_table (user_id, ser_id, ch_id, translate_to, translate_from) \
+					VALUES ('{}', '{}', '{}', '{}', '{}')".format(ctx.author.id, ctx.guild.id, ctx.channel.id, to, frm)
+
+					try:
+						await con.execute(ins_user)
+						await ctx.send(f"{ctx.author.mention}, *your automatic translation to* `{to}` *has successfully been enabled for this channel.*", delete_after=3.0)
+					
+					
+					finally:
+						await self.bot.pool.release(con)
 
 		else:
 			await ctx.send("Sorry I didn't understand the language codes. Please type `t-tr codes` to get the list of supported languages.", delete_after=3.0)
@@ -673,6 +726,7 @@ class Translate(commands.Cog):
 
 
 
+	
 	@ch.command(name="off")
 	@commands.guild_only()
 	async def ch_off(self, ctx):
@@ -684,7 +738,7 @@ class Translate(commands.Cog):
 		con = await self.bot.pool.acquire()
 		
 		check_user = "SELECT * FROM translation_table WHERE user_id = '{}' \
-		AND ch_id = '{}'".format(ctx.author.id, ctx.message.channel.id)
+		AND ch_id = '{}' AND translate_to IS NOT NULL".format(ctx.author.id, ctx.message.channel.id)
 
 		if await con.fetchrow(check_user):
 			del_user = "DELETE FROM translation_table WHERE user_id = '{}' AND ch_id = '{}'".format(ctx.author.id, ctx.channel.id)
@@ -731,6 +785,7 @@ class Translate(commands.Cog):
 	@has_power()
 	async def ignore(self, ctx, *keyword):
 		'''This will ignore translating the message starting with the keyword'''
+
 		if set(keyword).issubset(set(self.ignore)):
 			if len(keyword) > 1:
 				await ctx.send("*No need. I already ignore these words.*")
@@ -933,7 +988,7 @@ class Translate(commands.Cog):
 
 
 
-	@tr.command()
+	@tr.command(name="status", aliases=["stat"])
 	@commands.guild_only()
 	async def status(self, ctx, member=None):
 		'''Displays the user's translation status'''
@@ -942,22 +997,27 @@ class Translate(commands.Cog):
 
 		con = await self.bot.pool.acquire()
 
+		if ctx.me.permissions_in(ctx.message.channel).manage_messages:
+			# delete the message command
+			await ctx.message.delete()
+
 		if member:
 			try:
 				member = await commands.MemberConverter().convert(ctx, member)
-				text = f"{member.display_name}'s auto-translation summary for this server."
+				text = f"{member.display_name}'s auto-translation summary."
 			except:
 				member = ctx.author
-				text = "Your auto-translation summary for this server."
+				text = "Your auto-translation summary."
 
 		else:
 			member = ctx.author
-			text = "Your auto-translation summary for this server."
+			text = "Your auto-translation summary."
 
 		embed = discord.Embed(color=0xC0C0C0)
+		embed.set_author(name=str(ctx.guild), icon_url=ctx.guild.icon_url)
 		embed.set_thumbnail(url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/translate.png")
 		embed.set_footer(text=text, \
-			icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
+			icon_url=member.avatar_url)
 
 		try:
 			user_ch_tr = "SELECT * FROM translation_table WHERE user_id = '{}' AND ser_id = '{}' AND \
@@ -966,17 +1026,17 @@ class Translate(commands.Cog):
 			ch_tr = await con.fetch(user_ch_tr)
 
 			if ch_tr:
-				value = "***Enabled***\n\n"
+				value = "***Enabled***\n"
 
 				for record in ch_tr:
 					frm, to = record['translate_from'], record['translate_to']
 					channel = await commands.TextChannelConverter().convert(ctx, str(record['ch_id']))
 
-					value += f"{channel.mention} {LANGUAGES[frm].capitalize()} (`{frm}`) \
-						➞ {LANGUAGES[to].capitalize()} (`{to}`)\n"
+					value += f"{channel.mention} \u200B \u200B \u200B \u200B`[{LANGUAGES[frm].capitalize()} ({frm}) \
+						➞ {LANGUAGES[to].capitalize()} ({to})]`\n"
 
 			else:
-				value = "*Disabled*"
+				value = "***Disabled***"
 
 			
 			embed.add_field(name="**Channel-translation**", value=value, inline=False)
@@ -997,7 +1057,7 @@ class Translate(commands.Cog):
 					value += f"{channel.mention} \u200B \u200B \u200B"
 
 			else:
-				value = "*None*"
+				value = "***None***"
 
 
 			embed.add_field(name="**Blocked Channels**", value=value, inline=False)
@@ -1009,11 +1069,11 @@ class Translate(commands.Cog):
 			auto_tr = await con.fetchrow(user_auto_tr)
 			if auto_tr:
 				frm, to = auto_tr['translate_from'], auto_tr['translate_to']
-				value = f"***Enabled*** \u200B \u200B \u200B \u200B[{LANGUAGES[frm].capitalize()} \
-					(`{frm}`) ➞ {LANGUAGES[to].capitalize()} (`{to}`)]"
+				value = f"***Enabled*** \u200B \u200B \u200B \u200B`[{LANGUAGES[frm].capitalize()} \
+					({frm}) ➞ {LANGUAGES[to].capitalize()} ({to})]`"
 
 			else:
-				value = "*Disabled*"
+				value = "***Disabled***"
 
 			embed.add_field(name="**Server-Translation**", value=value, inline=False)
 
@@ -1074,7 +1134,7 @@ class Translate(commands.Cog):
 					if message.author.id == self.bot.user.id and message.embeds[0].description.strip('*') == old_message.content:
 
 						'''
-						Verify if the message any kind of mentions only.
+						Verify if the message has any kind of mentions only.
 						If it does, ignore translating it.
 						'''
 
@@ -1120,6 +1180,7 @@ class Translate(commands.Cog):
 						new_message_content = new_message.clean_content.translate(new_message.clean_content.maketrans('', '', ''.join(re.findall(self.emoji_regex, new_message.clean_content))))
 						new_message_content = new_message.clean_content.replace('*', '')
 						new_message_content = re.sub(' +', ' ', new_message_content)
+						new_message_content = re.sub('(\B[@|#]\S+)', r'"\1"', new_message_content)
 
 
 						# with more confidence means perfect translation xD
@@ -1139,12 +1200,14 @@ class Translate(commands.Cog):
 
 							# here I found that few things get changed after translating the message
 							# so I just replace them with their original formats
-							if "<@ " in translated_message.text or "<@! " in translated_message.text:
-								translated_message.text = translated_message.text.replace("<@ ", "<@")
-								translated_message.text = translated_message.text.replace("<@! ", "<@")
+							
+							if "@ " in translated_message.text:
+								translated_message.text = translated_message.text.replace("@ ", "@")
 
-							if "<# " in translated_message.text or "<@! " in translated_message.text:
-								translated_message.text = translated_message.text.replace("<# ", "<#")
+							if "# " in translated_message.text:
+								translated_message.text = translated_message.text.replace("# ", "#")
+
+							translated_message.text = re.sub('("(?=[ @#]))', '', translated_message.text)
 
 							# Discord embeds, no big deal xD
 							embed = discord.Embed(description = '*'+updated_message+'*', color=0xC0C0C0)
@@ -1220,7 +1283,7 @@ class Translate(commands.Cog):
 		if user:
 
 			'''
-			Verify if the message any kind of mentions only.
+			Verify if the message has any kind of mentions only.
 			If it does, ignore translating it.
 			'''
 
@@ -1262,6 +1325,7 @@ class Translate(commands.Cog):
 				message_content = message.clean_content.translate(message.clean_content.maketrans('', '', ''.join(re.findall(self.emoji_regex, message.clean_content))))
 				message_content = message_content.replace('*', '')
 				message_content = re.sub(' +', ' ', message_content)
+				message_content = re.sub('(\B[@|#]\S+)', r'"\1"', message_content)
 
 				# with more confidence means perfect translation
 				language_confidence = await self.translator.detect(message_content)
@@ -1282,15 +1346,14 @@ class Translate(commands.Cog):
 
 					# here I found that few things get changed after translating the message
 					# so I just replace them with their original formats
-					if "<@ " in translated_message.text or "<@! " in translated_message.text:
-						translated_message.text = translated_message.text.replace("<@ ", "<@")
-						translated_message.text = translated_message.text.replace("<@! ", "<@")
+					
+					if "@ " in translated_message.text:
+						translated_message.text = translated_message.text.replace("@ ", "@")
 
-					if "<# " in translated_message.text or "<#! " in translated_message.text:
-						translated_message.text = translated_message.text.replace("<# ", "<#")
+					if "# " in translated_message.text:
+						translated_message.text = translated_message.text.replace("# ", "#")
 
-					if "<@& " in translated_message.text or "<@&! " in translated_message.text:
-						translated_message.text = translated_message.text.replace("<@& ", "<@&")
+					translated_message.text = re.sub('("(?=[ @#]))', '', translated_message.text)
 
 					# Discord embeds, no big deal xD
 					embed = discord.Embed(description = '*'+old_message_content+'*', color=0xC0C0C0)
@@ -1300,34 +1363,6 @@ class Translate(commands.Cog):
 						src, LANGUAGES[dest].capitalize(), dest), icon_url="https://raw.githubusercontent.com/J16N/tsuby/master/assets/tsuby-footer.png")
 
 					await message.channel.send(embed=embed)
-
-
-
-
-	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
-	@has_power()
-	async def leave(self, ctx):
-		'''Removes all the translation setup (if enabled) and leaves the server'''
-
-		message = await ctx.send("Cleaning up...")
-
-		con = await self.bot.pool.acquire()
-
-		check_guild = "SELECT * FROM translation_table WHERE ser_id = '{}'".format(ctx.guild.id)
-
-		if await con.fetchrow(check_guild):
-			del_server = "DELETE FROM translation_table WHERE ser_id = '{}'".format(ctx.guild.id)
-
-			try:
-				await con.execute(del_server)
-
-			finally:
-				await self.bot.pool.release(con)
-
-
-		await message.edit(content="**GOODBYE EVERYONE !!** :wave:")
-		await ctx.guild.leave()
 
 
 
