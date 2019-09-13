@@ -44,7 +44,7 @@ class Games(commands.Cog):
 
 
 	@commands.group(case_insensitive=True)
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	@commands.guild_only()
 	async def game(self, ctx):
 		'''Our main game command. Other commands are just sub commands of this'''

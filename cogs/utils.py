@@ -83,7 +83,7 @@ class Utils(commands.Cog):
 	
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def ping(self, ctx):
 		'''Pings the bot'''
 		
@@ -101,7 +101,7 @@ class Utils(commands.Cog):
 	
 
 	@commands.command(name='nitromojis', aliases=['nitroemojis'])
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def nitromojis(self, ctx):
 		'''Lists all the nitromojis'''
 
@@ -160,7 +160,7 @@ class Utils(commands.Cog):
 	
 
 	@commands.command(name="ne", aliases=['nitro', 'nitroemoji', 'nitromoji'])
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def nitromoji(self, ctx, *names):
 		'''Send the nitromoji'''
 
@@ -229,7 +229,7 @@ class Utils(commands.Cog):
 	
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def react(self, ctx, number, *reactions):
 		'''Reacts to the last message'''
 
@@ -311,7 +311,7 @@ class Utils(commands.Cog):
 
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	@commands.guild_only()
 	async def feedback(self, ctx, *, message=None):
 		'''Sends feedback to the developer'''
@@ -362,7 +362,7 @@ class Utils(commands.Cog):
 
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def invite(self, ctx):
 		'''Returns an invite url'''
 
@@ -376,7 +376,7 @@ class Utils(commands.Cog):
 
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def about(self, ctx):
 		'''Lists some info about Tsuby'''
 
@@ -411,7 +411,7 @@ class Utils(commands.Cog):
 	@commands.command()
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def clear(self, ctx, number=None, mention=None):
 		'''Clears the given number of messages'''
 
@@ -456,7 +456,7 @@ class Utils(commands.Cog):
 	
 
 
-	@commands.command()
+	@commands.command(hidden=True)
 	@owner()
 	async def announce(self, ctx, *, message):
 		'''Announce new features to all the servers'''
@@ -522,7 +522,7 @@ class Utils(commands.Cog):
 
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	@admin()
 	async def leave(self, ctx):
 		'''Removes all the translation setup (if enabled) and leaves the server'''

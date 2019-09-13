@@ -109,7 +109,7 @@ class Coc(commands.Cog):
 
 
 	@commands.group(case_insensitive=True)
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def coc(self, ctx):
 		'''Our main coc command. Other commands are just sub commands of this'''
 		if ctx.invoked_subcommand is None:

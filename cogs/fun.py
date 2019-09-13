@@ -202,7 +202,7 @@ class Fun(commands.Cog):
 
 
 	@commands.group(case_insensitive=True, invoke_without_command=True)
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	@commands.guild_only()
 	async def jokes(self, ctx, *, category=""):
 		'''Our main jokes command. This posts random jokes'''
@@ -367,7 +367,7 @@ class Fun(commands.Cog):
 
 	@commands.group(case_insensitive=True, invoke_without_command=True, name="9gag")
 	@commands.guild_only()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def ninegag(self, ctx, *, category=None):
 		'''Posts random meme'''
 

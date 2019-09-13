@@ -78,7 +78,7 @@ class Translate(commands.Cog):
 
 
 	@commands.group(case_insensitive=True)
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def tr(self, ctx):
 		'''The main translation command. Other commands are just sub commands of this'''
 		if ctx.invoked_subcommand is None:

@@ -36,7 +36,7 @@ class Help(commands.Cog):
 		self.bot = bot
 
 	@commands.command()
-	@commands.cooldown(10,600,type=BucketType.member)
+	@commands.cooldown(10,600,type=BucketType.guild)
 	async def help(self, ctx):
 		'''Displays the help command'''
 
