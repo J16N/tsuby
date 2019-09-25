@@ -3,3 +3,5 @@ aiogoogletrans
 akinator.py[fast_async]
 beautifulsoup4
 asyncpg
+psutil
+fuzzywuzzy

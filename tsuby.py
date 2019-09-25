@@ -39,12 +39,16 @@ BOT_PREFIX = [
 	'<@554689083289632781> ', '<@554689083289632781>'
 ]
 
-cogs = ['cogs.translate', 'cogs.coc', 'cogs.utils', 'cogs.help', 'cogs.game', 'cogs.fun']
+cogs = ['cogs.translate', 'cogs.coc', 'cogs.utils', 'cogs.help', 'cogs.game', 'cogs.entertainment']
 
 async def run():
 	'''Runs the bot and connect to the database'''
 
-	bot = commands.Bot(command_prefix=BOT_PREFIX, case_insensitive=True)
+	bot = commands.Bot(
+		description="I am your next generation discord bot.",
+		command_prefix=BOT_PREFIX,
+		case_insensitive=True
+	)
 
 	bot.config = configparser.RawConfigParser()
 	bot.config.read("config.txt")
@@ -58,6 +62,23 @@ async def run():
 
 	for cog in cogs:
 		bot.load_extension(cog)
+
+
+	#these things are absolutely for help command
+	# -------------------------------------------
+
+	bot.temp_user = {}
+	bot.categories = list(set([cog for cog in bot.cogs])) # this is to remove duplicates
+	bot.allcommands = list(set([command.qualified_name for command in bot.walk_commands() if not command.hidden]))
+	bot.help_prefix = (
+		't- help', 'T- help', 
+		't-help', 'T-help', 
+		'<@554689083289632781> help', '<@554689083289632781>help'
+	)
+
+	#++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 	# bot token, VERY IMPORTANT
 	token = bot.config.get("my-config", "TOKEN")
