@@ -25,12 +25,21 @@ SOFTWARE.
 """
 
 
-import discord
-from discord.ext import commands
-import asyncio
-import os
-import asyncpg
+import discord, coc
+import asyncio, os, asyncpg
 import configparser
+from discord.ext.commands import Bot
+from coc import Client
+
+
+
+# +++++++++ Configurations ++++++++++++
+
+config = configparser.RawConfigParser()
+config.read("config.txt")
+
+# +++++++++++++++++++++++++++++++++++++
+
 
 # Command prefix for using the bot
 BOT_PREFIX = [
@@ -41,24 +50,36 @@ BOT_PREFIX = [
 
 cogs = ['cogs.translate', 'cogs.coc', 'cogs.utils', 'cogs.help', 'cogs.game', 'cogs.entertainment']
 
-async def run():
-	'''Runs the bot and connect to the database'''
 
-	bot = commands.Bot(
+
+async def run():
+	'''Run the bot and connect to the database'''
+
+	bot = Bot(
 		description="I am your next generation discord bot.",
 		command_prefix=BOT_PREFIX,
 		case_insensitive=True
 	)
 
-	bot.config = configparser.RawConfigParser()
-	bot.config.read("config.txt")
+	# +++++++++++++++++++++++++++++++++ COC Client +++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	bot.coc = Client()
+	bot.coc.create_cache
+	await bot.coc.login(config.get("my-config", "coc_email"), config.get("my-config", "coc_password"))
+
+	# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+	
+	# %%%%%%%%%%%%% Database Setup %%%%%%%%%%%%%%%%%%
 
 	bot.pool = await asyncpg.create_pool(
-		host=bot.config.get("my-config", "host"), 
-		database=bot.config.get("my-config", "database"), 
-		user=bot.config.get("my-config", "user"), 
-		password=bot.config.get("my-config", "password")
+		host=config.get("my-config", "host"), 
+		database=config.get("my-config", "database"), 
+		user=config.get("my-config", "user"), 
+		password=config.get("my-config", "password")
 	)
+
+	# &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 	for cog in cogs:
 		bot.load_extension(cog)
@@ -76,16 +97,13 @@ async def run():
 		'<@554689083289632781> help', '<@554689083289632781>help'
 	)
 
-	#++++++++++++++++++++++++++++++++++++++++++++
+	# +++++++++++++++++++++++++++++++++++++++++++
 
-
-
-	# bot token, VERY IMPORTANT
-	token = bot.config.get("my-config", "TOKEN")
 
 	# running our bot with the token finally
 	try:
-		await bot.start(token)
+		await bot.start(config.get("my-config", "TOKEN"))
+	
 	except:
 		# Make sure to do these steps if you use a command to exit the bot
 		await bot.pool.close()
